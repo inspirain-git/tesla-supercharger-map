@@ -217,7 +217,7 @@ main{padding:12px 14px 30px}
 /* ---- Footer ---- */
 #footer{padding:28px 22px calc(env(safe-area-inset-bottom) + 34px);border-top:1px solid var(--line);
   margin-top:8px;background:var(--bg2)}
-.ft-brand{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.ft-brand{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:15px}
 .ft-logo{height:30px;width:auto;opacity:.95}
 .ft-title{font-size:14px;font-weight:800}
 .ft-by{font-size:11.5px;color:var(--muted);margin-top:3px}
@@ -252,6 +252,8 @@ main{padding:12px 14px 30px}
 .spon-menu{background:var(--card2);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--muted)}
 .spon-link{display:inline-block;margin-top:10px;background:var(--card2);border:1px solid var(--line);
   border-radius:9px;padding:9px 14px;font-size:12.5px;font-weight:700;color:var(--red2)}
+.spon-card:not(.paid)::after{background:linear-gradient(#3b9dff,#2666a8)}
+.spon-benefit.fac{color:var(--muted);font-weight:600}
 
 /* ---- Shop overlay ---- */
 .shop{position:fixed;inset:0;z-index:1200;background:var(--bg);overflow-y:auto;
@@ -360,7 +362,7 @@ main{padding:12px 14px 30px}
       <div class="ft-by">powered by <b>inspirain</b></div>
     </div>
   </div>
-  <div class="ft-copy">전국 슈퍼차저 167곳 · 평점·후기 데이터 기반 · © inspirain</div>
+  <div class="ft-copy">© 2026 inspirain. All rights reserved.</div>
 </footer>
 </div><!-- /#scroll -->
 
@@ -524,18 +526,6 @@ function openSheet(c){
     ["주차 가성비",c.r_cost],["충전 점수",c.r_score]]
     .map(([l,v])=>`<div class="rrow"><div class="rl">${l}</div><div class="rt"><div class="rf" style="width:${(v||0)*10}%;background:${scoreColor(v||0)}"></div></div><div class="rv" style="color:${scoreColor(v||0)}">${v!=null?v.toFixed(v%1?1:0):'-'}</div></div>`).join("");
   const dist = c._d!=null?`<span class="pill dist">📍 ${fmtDist(c._d)}</span>`:"";
-  const videos = [
-    ["진입 동영상","ENTRANCE",c.vEnt],
-    ["주변시설 동영상","AROUND",c.vFac]
-  ].filter(v=>v[2]).map(([label,tag,v])=>`
-    <div class="vwrap">
-      <div class="vlabel"><span class="vtag">${tag}</span>${label}</div>
-      <div class="vframe" data-vid="${v.id}" data-start="${v.start}">
-        <div class="vthumb" style="background-image:url('https://i.ytimg.com/vi/${v.id}/hqdefault.jpg')">
-          <div class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-        </div>
-      </div>
-    </div>`).join("");
   const sponsorHTML = sponsorSection(c);
   sh.innerHTML=`
     <div class="grabber"></div>
@@ -566,16 +556,8 @@ function openSheet(c){
         </div>
       </div>
       ${sponsorHTML}
-      ${videos?`<div class="section"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>동영상</h3>
-        <div class="videos">${videos}</div></div>`:''}
       <div style="height:16px"></div>
     </div>`;
-  sh.querySelectorAll(".vframe").forEach(f=>{
-    f.querySelector(".vthumb").onclick=()=>{
-      const id=f.dataset.vid, st=f.dataset.start;
-      f.innerHTML=`<iframe src="https://www.youtube.com/embed/${id}?start=${st}&autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
-    };
-  });
   const scard=sh.querySelector(".spon-card");
   if(scard) scard.onclick=()=>scard.classList.toggle("open");
   sh.style.transform="";
@@ -643,30 +625,52 @@ const SPONSORS=[
    hours:"매일 10:30–21:00", tel:"", url:"#" },
 ];
 function getSponsor(c){ return SPONSORS.find(s=>c.name.includes(s.match)) || null; }
+// 큐레이션 스폰서가 없으면 슈퍼차저가 위치한 건물/시설을 자동 카드로
+function facilityCard(c){
+  const fac=(c.facility||"").split("\n")[0].trim() || c.title;
+  const txt=(c.facility||"")+(c.title||"")+(c.misc||"");
+  const has=(...k)=>k.some(x=>txt.includes(x));
+  let emoji="🏬", color="#3a4152", cat="슈퍼차저 위치 · 주변 시설";
+  if(has("카페","커피","베이커리","로스터","테라로사")){emoji="☕";color="#7a4b2b";cat="카페 · 베이커리";}
+  else if(has("아울렛","몰","백화점","쇼핑","스퀘어","플라자","스타필드")){emoji="🛍️";color="#c0392b";cat="쇼핑 · 몰";}
+  else if(has("호텔","리조트","소노","한화","하얏트","롯데시티")){emoji="🏨";color="#2e6f8e";cat="호텔 · 리조트";}
+  else if(has("휴게소")){emoji="🅿️";color="#3f7a3f";cat="고속도로 · 휴게소";}
+  else if(has("주유소","엔크린","칼텍스","블루에너지")){emoji="⛽";color="#b5632a";cat="주유소 · 편의";}
+  else if(has("마트","홈플러스","이마트","하나로","코스트코")){emoji="🛒";color="#2f7d5b";cat="마트 · 쇼핑";}
+  else if(has("세차")){emoji="🚿";color="#2c6e8f";cat="세차 · 관리";}
+  return { name:fac, cat, emoji, color, loc:c.location||"-", facility:c.facility, sponsored:false };
+}
 function sponsorSection(c){
-  const s=getSponsor(c); if(!s) return "";
+  const paid=getSponsor(c);
+  const s = paid || facilityCard(c);
+  const on = !!paid;
   const thumb = s.img
     ? `<div class="spon-thumb" style="background-image:url('${s.img}')"></div>`
     : `<div class="spon-thumb" style="background:linear-gradient(135deg,${s.color},${s.color}bb)"><span>${s.emoji}</span></div>`;
   const menu=(s.menu||[]).map(m=>`<span class="spon-menu">${m}</span>`).join("");
-  return `<div class="section"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM6 8v12h12V8M9 12h6"/></svg>스폰서 · 주변 혜택</h3>
-    <div class="spon-card">
+  const head = on ? "스폰서 · 주변 혜택" : "슈퍼차저 위치 · 주변 시설";
+  const subline = on
+    ? `<div class="spon-benefit">🎁 ${s.benefit}</div>`
+    : (c.facility?`<div class="spon-benefit fac">🏬 ${(c.facility).replace(/\n/g,' ')}</div>`:"");
+  return `<div class="section"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM6 8v12h12V8M9 12h6"/></svg>${head}</h3>
+    <div class="spon-card${on?' paid':''}">
       <div class="spon-top">
         ${thumb}
         <div class="spon-info">
-          <div class="spon-name">${s.name}<span class="ad">AD</span></div>
+          <div class="spon-name">${s.name}${on?'<span class="ad">AD</span>':''}</div>
           <div class="spon-cat">${s.cat}</div>
-          <div class="spon-benefit">🎁 ${s.benefit}</div>
+          ${subline}
         </div>
         <div class="spon-chev">›</div>
       </div>
       <div class="spon-detail">
         <div class="spon-drow"><b>위치</b><span>${s.loc}</span></div>
-        ${menu?`<div class="spon-drow"><b>메뉴</b><span class="spon-menus">${menu}</span></div>`:''}
-        <div class="spon-drow"><b>혜택</b><span>${s.benefit}</span></div>
-        ${s.hours?`<div class="spon-drow"><b>영업</b><span>${s.hours}</span></div>`:''}
-        ${s.tel?`<div class="spon-drow"><b>전화</b><span>${s.tel}</span></div>`:''}
-        ${s.url&&s.url!=='#'?`<a class="spon-link" href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">매장 정보 ›</a>`:''}
+        ${on&&menu?`<div class="spon-drow"><b>메뉴</b><span class="spon-menus">${menu}</span></div>`:''}
+        ${on?`<div class="spon-drow"><b>혜택</b><span>${s.benefit}</span></div>`:''}
+        ${!on&&c.facility?`<div class="spon-drow"><b>시설</b><span>${c.facility.replace(/\n/g,' ')}</span></div>`:''}
+        ${on&&s.hours?`<div class="spon-drow"><b>영업</b><span>${s.hours}</span></div>`:''}
+        ${on&&s.tel?`<div class="spon-drow"><b>전화</b><span>${s.tel}</span></div>`:''}
+        ${on&&s.url&&s.url!=='#'?`<a class="spon-link" href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">매장 정보 ›</a>`:''}
       </div>
     </div>
   </div>`;
