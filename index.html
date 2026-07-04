@@ -185,11 +185,7 @@ main{padding:12px 14px 30px}
 .navopt{width:100%;display:flex;align-items:center;gap:12px;padding:14px;border-radius:13px;
   background:var(--card);border:1px solid var(--line);margin-bottom:9px;font-size:15px;font-weight:700;color:var(--txt)}
 .navopt:active{transform:scale(.98)}
-.navopt .ni{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:900;color:#fff;flex-shrink:0}
-.navopt.tmap .ni{background:#EC0F69}
-.navopt.kakao .ni{background:#FEE500;color:#3A1D1D}
-.navopt.naver .ni{background:#03C75A}
+.navopt .ni{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:block}
 .navopt .ngo{margin-left:auto;color:var(--muted2);font-size:20px;font-weight:400}
 .navopt.cancel{justify-content:center;background:var(--card2);color:var(--muted);font-weight:700;margin-top:2px}
 
@@ -200,11 +196,7 @@ main{padding:12px 14px 30px}
 .navrow{display:flex;gap:8px}
 .navbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 4px;
   border-radius:13px;background:var(--card);border:1px solid var(--line);font-size:12.5px;font-weight:800;color:var(--txt)}
-.navbtn .ni{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
-  font-size:15px;font-weight:900;color:#fff}
-.navbtn.tmap .ni{background:#EC0F69}
-.navbtn.kakao .ni{background:#FEE500;color:#3A1D1D}
-.navbtn.naver .ni{background:#03C75A}
+.navbtn .ni{width:34px;height:34px;border-radius:9px;display:block}
 .navbtn:active{transform:scale(.96)}
 
 /* ---- Footer ---- */
@@ -421,9 +413,9 @@ function openNav(c){
   ns.innerHTML=`
     <div class="grabber"></div>
     <div class="ns-title">🧭 길안내 앱 선택<div class="ns-sub">${c.title}</div></div>
-    <button class="navopt tmap" data-p="tmap"><span class="ni">T</span>티맵<span class="ngo">›</span></button>
-    <button class="navopt kakao" data-p="kakao"><span class="ni">K</span>카카오맵<span class="ngo">›</span></button>
-    <button class="navopt naver" data-p="naver"><span class="ni">N</span>네이버맵<span class="ngo">›</span></button>
+    <button class="navopt" data-p="tmap"><img class="ni" src="logo/icon-tmap.png" alt="">티맵<span class="ngo">›</span></button>
+    <button class="navopt" data-p="kakao"><img class="ni" src="logo/icon-kakao.png" alt="">카카오맵<span class="ngo">›</span></button>
+    <button class="navopt" data-p="naver"><img class="ni" src="logo/icon-naver.png" alt="">네이버맵<span class="ngo">›</span></button>
     <button class="navopt cancel">취소</button>`;
   ns.querySelectorAll(".navopt[data-p]").forEach(b=>b.onclick=()=>launchNav(b.dataset.p,c));
   ns.querySelector(".cancel").onclick=closeNav;
@@ -486,9 +478,9 @@ function openSheet(c){
     <div class="sheet-nav">
       <div class="navlabel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.3-7-11a7 7 0 0114 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>길안내 시작</div>
       <div class="navrow">
-        <button class="navbtn tmap" onclick="launchNav('tmap',DATA[${c.id}])"><span class="ni">T</span>티맵</button>
-        <button class="navbtn kakao" onclick="launchNav('kakao',DATA[${c.id}])"><span class="ni">K</span>카카오맵</button>
-        <button class="navbtn naver" onclick="launchNav('naver',DATA[${c.id}])"><span class="ni">N</span>네이버맵</button>
+        <button class="navbtn" onclick="launchNav('tmap',DATA[${c.id}])"><img class="ni" src="logo/icon-tmap.png" alt="">티맵</button>
+        <button class="navbtn" onclick="launchNav('kakao',DATA[${c.id}])"><img class="ni" src="logo/icon-kakao.png" alt="">카카오맵</button>
+        <button class="navbtn" onclick="launchNav('naver',DATA[${c.id}])"><img class="ni" src="logo/icon-naver.png" alt="">네이버맵</button>
       </div>
     </div>`;
   sh.querySelectorAll(".vframe").forEach(f=>{
