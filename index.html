@@ -208,6 +208,84 @@ main{padding:12px 14px 30px}
 .ft-by{font-size:11.5px;color:var(--muted);margin-top:3px}
 .ft-by b{color:var(--red2)}
 .ft-copy{font-size:10.5px;color:var(--muted2);margin-top:15px;text-align:center;line-height:1.6}
+
+/* ---- Shop open button ---- */
+.shop-open{display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--line);
+  border-radius:11px;padding:7px 11px;font-size:12.5px;font-weight:700;color:var(--txt);flex-shrink:0}
+.shop-open svg{width:15px;height:15px;color:var(--red2)}
+.shop-open:active{transform:scale(.96)}
+
+/* ---- Sponsor slot ---- */
+.spon-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative}
+.spon-card::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(var(--gold),#ff8a00)}
+.spon-top{display:flex;align-items:center;gap:12px;padding:13px 14px 13px 16px;cursor:pointer}
+.spon-thumb{width:52px;height:52px;border-radius:12px;flex-shrink:0;background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center;font-size:26px}
+.spon-info{flex:1;min-width:0}
+.spon-name{font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:6px}
+.spon-name .ad{font-size:8.5px;font-weight:800;background:var(--gold);color:#1a1a20;padding:1px 5px;border-radius:4px;letter-spacing:.5px}
+.spon-cat{font-size:11.5px;color:var(--muted);margin:2px 0 5px}
+.spon-benefit{font-size:12px;color:var(--gold);font-weight:600;line-height:1.35}
+.spon-chev{color:var(--muted2);font-size:22px;transition:transform .25s;flex-shrink:0}
+.spon-card.open .spon-chev{transform:rotate(90deg)}
+.spon-detail{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 16px}
+.spon-card.open .spon-detail{max-height:420px;padding:0 16px 14px}
+.spon-drow{display:flex;gap:10px;font-size:12.5px;padding:8px 0;border-top:1px solid var(--line);line-height:1.5}
+.spon-drow b{color:var(--muted2);font-weight:700;width:38px;flex-shrink:0}
+.spon-drow>span{flex:1;color:var(--txt)}
+.spon-menus{display:flex;flex-wrap:wrap;gap:5px}
+.spon-menu{background:var(--card2);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--muted)}
+.spon-link{display:inline-block;margin-top:10px;background:var(--card2);border:1px solid var(--line);
+  border-radius:9px;padding:9px 14px;font-size:12.5px;font-weight:700;color:var(--red2)}
+
+/* ---- Shop overlay ---- */
+.shop{position:fixed;inset:0;z-index:1200;background:var(--bg);overflow-y:auto;
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
+  padding-bottom:calc(env(safe-area-inset-bottom) + 100px)}
+.shop.show{transform:translateX(0)}
+.shop-hd{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;
+  padding:calc(env(safe-area-inset-top) + 12px) 14px 12px;background:rgba(12,12,15,.92);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.shop-title{flex:1;font-size:16px;font-weight:800;text-align:center}
+.shop-close,.shop-back{background:var(--card2);border:1px solid var(--line);border-radius:10px;
+  min-width:36px;height:34px;padding:0 11px;font-size:16px;font-weight:700;color:var(--txt)}
+.shop-back{font-size:13px;color:var(--muted)}
+.shop-note{font-size:11px;color:var(--muted2);text-align:center;padding:13px 18px 2px}
+.shop-cats{display:flex;gap:7px;overflow-x:auto;padding:12px 14px 4px;scrollbar-width:none}
+.scat{white-space:nowrap;background:var(--card2);border:1px solid var(--line);border-radius:18px;
+  padding:7px 13px;font-size:12.5px;font-weight:700;color:var(--muted)}
+.scat.active{background:var(--red);border-color:var(--red);color:#fff}
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:8px 14px}
+.prod-card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.prod-card:active{transform:scale(.97)}
+.prod-thumb{position:relative;width:100%;padding-top:76%;display:flex;align-items:center;justify-content:center;
+  background-size:cover;background-position:center}
+.prod-thumb>span:first-child{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:44px}
+.plat{position:absolute;left:8px;top:8px;font-size:9.5px;font-weight:800;color:#fff;padding:3px 7px;border-radius:6px;background:rgba(0,0,0,.55)}
+.plat.coupang{background:#ff5a5f}.plat.ali{background:#e63946}.plat.naver{background:#03C75A}
+.plat.jouwa{background:#111;border:1px solid #ffd700;color:#ffd700}.plat.mall{background:#555}
+.prod-b{padding:10px 11px 12px}
+.prod-name{font-size:12.5px;font-weight:700;line-height:1.35;height:34px;overflow:hidden}
+.prod-price{font-size:14px;font-weight:800;margin-top:5px}
+.prod-detail{padding:16px}
+.pd-thumb{width:100%;padding-top:60%;position:relative;border-radius:16px;background-size:cover;background-position:center;
+  border:1px solid var(--line)}
+.pd-thumb>span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:76px}
+.pd-plat{display:flex;align-items:center;gap:8px;margin-top:14px}
+.pd-plat .plat{position:static}
+.pd-cat{font-size:11.5px;color:var(--muted)}
+.pd-name{font-size:19px;font-weight:800;margin-top:10px;line-height:1.3}
+.pd-brand{font-size:12.5px;color:var(--muted);margin-top:4px}
+.pd-price{font-size:24px;font-weight:800;margin-top:10px}
+.pd-desc{font-size:13.5px;color:var(--muted);line-height:1.6;margin-top:12px}
+.pd-sec{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.5px;margin-top:20px}
+.pd-feats{margin:10px 0 0;padding-left:18px}
+.pd-feats li{font-size:13.5px;line-height:1.75;color:var(--txt)}
+.pd-buy{position:fixed;left:0;right:0;bottom:0;padding:14px 16px calc(env(safe-area-inset-bottom) + 14px);
+  background:linear-gradient(transparent,var(--bg) 24%)}
+.pd-buybtn{display:block;width:100%;text-align:center;background:var(--red);color:#fff;border-radius:14px;
+  padding:15px;font-size:15.5px;font-weight:800}
+.pd-buybtn.disabled{background:var(--card2);color:var(--muted);border:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -215,7 +293,7 @@ main{padding:12px 14px 30px}
   <div class="brand">
     <img class="logo" src="logo/tesla-logo.png?v=2" alt="Tesla">
     <h1>슈퍼차저 맵</h1>
-    <span class="count" id="hdrCount"></span>
+    <button class="shop-open" id="shopBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L4 6v14a2 2 0 002 2h12a2 2 0 002-2V6l-2-4z"/><path d="M4 6h16M9 10a3 3 0 006 0"/></svg>용품샵</button>
   </div>
   <div class="searchrow">
     <div class="searchbox">
@@ -272,6 +350,7 @@ main{padding:12px 14px 30px}
 <div class="sheet" id="sheet"></div>
 <div class="overlay" id="navOverlay"></div>
 <div class="navsheet" id="navSheet"></div>
+<div class="shop" id="shop"></div>
 <div class="toast" id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -438,6 +517,7 @@ function openSheet(c){
         </div>
       </div>
     </div>`).join("");
+  const sponsorHTML = sponsorSection(c);
   sh.innerHTML=`
     <div class="grabber"></div>
     <div class="sheet-hd">
@@ -453,8 +533,7 @@ function openSheet(c){
     <div class="sheet-body">
       <div class="section">
         <div class="totalrow">
-          <div><div class="big" style="color:${scoreColor(c.total)}">${c.total!=null?c.total.toFixed(1):'-'}<small>/10</small></div>
-          <div class="stars">${starStr(c.total||0)}</div></div>
+          <div class="big" style="color:${scoreColor(c.total)}">${c.total!=null?c.total.toFixed(1):'-'}<small>/10</small></div>
           <div style="flex:1"><div class="radar" style="padding:0;border:none;background:none">${rrows}</div></div>
         </div>
       </div>
@@ -467,16 +546,10 @@ function openSheet(c){
           <div class="infoitem"><div class="il">🏬 주변 시설</div><div class="iv">${c.facility||'-'}</div></div>
         </div>
       </div>
+      ${sponsorHTML}
       ${videos?`<div class="section"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>동영상</h3>
         <div class="videos">${videos}</div></div>`:''}
-    </div>
-    <div class="sheet-nav">
-      <div class="navlabel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.3-7-11a7 7 0 0114 0c0 4.7-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>길안내 시작</div>
-      <div class="navrow">
-        <button class="navbtn" onclick="launchNav('tmap',DATA[${c.id}])"><img class="ni" src="logo/icon-tmap.png" alt="">티맵</button>
-        <button class="navbtn" onclick="launchNav('kakao',DATA[${c.id}])"><img class="ni" src="logo/icon-kakao.png" alt="">카카오맵</button>
-        <button class="navbtn" onclick="launchNav('naver',DATA[${c.id}])"><img class="ni" src="logo/icon-naver.png" alt="">네이버맵</button>
-      </div>
+      <div style="height:16px"></div>
     </div>`;
   sh.querySelectorAll(".vframe").forEach(f=>{
     f.querySelector(".vthumb").onclick=()=>{
@@ -484,13 +557,171 @@ function openSheet(c){
       f.innerHTML=`<iframe src="https://www.youtube.com/embed/${id}?start=${st}&autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
     };
   });
+  const scard=sh.querySelector(".spon-card");
+  if(scard) scard.onclick=()=>scard.classList.toggle("open");
+  sh.style.transform="";
   $("#overlay").classList.add("show");
   sh.classList.add("show");
   sh.scrollTop=0;
 }
-function closeSheet(){ $("#sheet").classList.remove("show"); $("#overlay").classList.remove("show"); }
+function closeSheet(){ const sh=$("#sheet"); sh.style.transform=""; sh.classList.remove("show"); $("#overlay").classList.remove("show"); }
 $("#overlay").onclick=closeSheet;
 $("#navOverlay").onclick=closeNav;
+
+/* ===== Swipe to dismiss detail sheet (아래로/좌로 스와이프) ===== */
+(function(){
+  const sh=$("#sheet"); let ts=null;
+  sh.addEventListener('touchstart',e=>{
+    if(e.touches.length!==1) return;
+    ts={x:e.touches[0].clientX,y:e.touches[0].clientY,st:sh.scrollTop,mode:null,d:0};
+    sh.style.transition='none';
+  },{passive:true});
+  sh.addEventListener('touchmove',e=>{
+    if(!ts) return;
+    const dx=e.touches[0].clientX-ts.x, dy=e.touches[0].clientY-ts.y;
+    if(ts.mode===null && (Math.abs(dx)>8||Math.abs(dy)>8)){
+      if(Math.abs(dx)>Math.abs(dy) && dx<0) ts.mode='left';
+      else if(dy>0 && ts.st<=0) ts.mode='down';
+      else ts.mode='scroll';
+    }
+    if(ts.mode==='down'){ ts.d=Math.max(0,dy); sh.style.transform=`translateY(${ts.d}px)`; if(e.cancelable)e.preventDefault(); }
+    else if(ts.mode==='left'){ ts.d=Math.min(0,dx); sh.style.transform=`translateX(${ts.d}px)`; if(e.cancelable)e.preventDefault(); }
+  },{passive:false});
+  sh.addEventListener('touchend',()=>{
+    if(!ts) return;
+    sh.style.transition='';
+    if(ts.mode==='down' && ts.d>100) closeSheet();
+    else if(ts.mode==='left' && ts.d<-80) closeSheet();
+    else sh.style.transform='';
+    ts=null;
+  },{passive:true});
+})();
+
+/* ===== 스폰서 / 쿠폰 (특정 슈퍼차저에 매장 배지+상세) =====
+   아래 SPONSORS 배열에 매장을 추가하면 해당 슈퍼차저 상세에 자동 노출됩니다.
+   match: 슈퍼차저 이름에 포함되는 문구 / img(선택): 로고·썸네일 URL / url: 매장 링크 */
+const SPONSORS=[
+ { match:"강릉 - 테라로사", name:"테라로사 커피공장 강릉본점", cat:"카페 · 베이커리", emoji:"☕", color:"#7a4b2b",
+   loc:"강원 강릉시 구정면 현천길 7 · 슈퍼차저 바로 앞",
+   menu:["시그니처 핸드드립","테라로사 라떼","수제 스콘·크루아상"],
+   benefit:"충전 중 방문 시 아메리카노 10% 할인 (차량 화면 제시)",
+   hours:"매일 09:00–21:00", tel:"033-648-2760", url:"#" },
+ { match:"남양주 - 화도", name:"디스플레인 (Displane)", cat:"대형 베이커리 카페", emoji:"🥐", color:"#3a6ea5",
+   loc:"경기 남양주시 화도읍 · 슈퍼차저 주차장 내",
+   menu:["스페셜티 커피","브런치 플레이트","오븐 베이커리"],
+   benefit:"충전 고객 음료 주문 시 디저트 1종 무료",
+   hours:"매일 10:00–22:00", tel:"", url:"#" },
+ { match:"부산 - 기장", name:"롯데프리미엄아울렛 동부산점", cat:"쇼핑 · 다이닝", emoji:"🛍️", color:"#c0392b",
+   loc:"부산 기장군 기장읍 · 슈퍼차저 인접",
+   menu:["패션 아울렛","푸드코트·레스토랑","카페·디저트"],
+   benefit:"충전 고객 대상 몰 이용 시 쿠폰·주차 혜택",
+   hours:"매일 10:30–21:00", tel:"", url:"#" },
+];
+function getSponsor(c){ return SPONSORS.find(s=>c.name.includes(s.match)) || null; }
+function sponsorSection(c){
+  const s=getSponsor(c); if(!s) return "";
+  const thumb = s.img
+    ? `<div class="spon-thumb" style="background-image:url('${s.img}')"></div>`
+    : `<div class="spon-thumb" style="background:linear-gradient(135deg,${s.color},${s.color}bb)"><span>${s.emoji}</span></div>`;
+  const menu=(s.menu||[]).map(m=>`<span class="spon-menu">${m}</span>`).join("");
+  return `<div class="section"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM6 8v12h12V8M9 12h6"/></svg>스폰서 · 주변 혜택</h3>
+    <div class="spon-card">
+      <div class="spon-top">
+        ${thumb}
+        <div class="spon-info">
+          <div class="spon-name">${s.name}<span class="ad">AD</span></div>
+          <div class="spon-cat">${s.cat}</div>
+          <div class="spon-benefit">🎁 ${s.benefit}</div>
+        </div>
+        <div class="spon-chev">›</div>
+      </div>
+      <div class="spon-detail">
+        <div class="spon-drow"><b>위치</b><span>${s.loc}</span></div>
+        ${menu?`<div class="spon-drow"><b>메뉴</b><span class="spon-menus">${menu}</span></div>`:''}
+        <div class="spon-drow"><b>혜택</b><span>${s.benefit}</span></div>
+        ${s.hours?`<div class="spon-drow"><b>영업</b><span>${s.hours}</span></div>`:''}
+        ${s.tel?`<div class="spon-drow"><b>전화</b><span>${s.tel}</span></div>`:''}
+        ${s.url&&s.url!=='#'?`<a class="spon-link" href="${s.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">매장 정보 ›</a>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ===== 용품샵 (레퍼럴/파트너스 링크) =====
+   PRODUCTS 배열에 상품 추가 · platform: 쿠팡/알리익스프레스/네이버/JOUWA/몰
+   url 을 레퍼럴 링크로 교체하면 구매버튼이 바로 동작합니다. */
+const PRODUCTS=[
+ {id:'ch1',cat:'충전·전력',name:'테슬라 이동형 충전기 (3핀)',brand:'JOUWA',price:'89,000원',platform:'JOUWA',emoji:'🔌',color:'#e53935',
+  desc:'가정용 콘센트로 어디서나 완속 충전. 여행·출장 시 비상 충전에 필수.',detail:['최대 3.5kW 완속 충전','과열·과전류 안전 차단 회로','휴대용 파우치 포함','모델 3/Y/S/X 호환'],url:'#'},
+ {id:'ch2',cat:'충전·전력',name:'충전 케이블 정리 홀더',brand:'ALI',price:'12,900원',platform:'알리익스프레스',emoji:'🧵',color:'#ff6a00',
+  desc:'트렁크 속 충전 케이블을 깔끔하게 감아 보관.',detail:['벽·트렁크 부착형','케이블 꼬임 방지','실리콘 미끄럼 방지'],url:'#'},
+ {id:'in1',cat:'인테리어·수납',name:'센터콘솔 하단 수납 트레이',brand:'JOUWA',price:'19,900원',platform:'쿠팡',emoji:'🗄️',color:'#3f51b5',
+  desc:'모델Y 전용, 콘솔 하단 빈 공간을 알뜰하게 활용.',detail:['모델Y 2020–2024 전용','미끄럼 방지 러버','설치 5초, 탈부착 간편'],url:'#'},
+ {id:'in2',cat:'인테리어·수납',name:'도어·대시 우드 트림 세트',brand:'몰',price:'34,000원',platform:'네이버',emoji:'🪵',color:'#795548',
+  desc:'인테리어 포인트를 살리는 우드그레인 트림.',detail:['무광 우드 마감','3M 테이프 부착','모델3/Y 호환'],url:'#'},
+ {id:'wa1',cat:'세차·관리',name:'발수 코팅 스프레이',brand:'ALI',price:'15,500원',platform:'알리익스프레스',emoji:'💧',color:'#00acc1',
+  desc:'세차 후 3분 만에 발수·광택 코팅.',detail:['물 뿌리고 닦기만','유리·도장·휠 겸용','약 3개월 지속'],url:'#'},
+ {id:'wa2',cat:'세차·관리',name:'극세사 세차 타월 5매',brand:'쿠팡',price:'9,900원',platform:'쿠팡',emoji:'🧽',color:'#26a69a',
+  desc:'도장을 보호하는 초극세사 타월.',detail:['1200GSM 고밀도','무연마 엣지 처리','뛰어난 흡수력'],url:'#'},
+ {id:'sm1',cat:'스마트 액세서리',name:'도어 웰컴 프로젝션 라이트',brand:'ALI',price:'22,000원',platform:'알리익스프레스',emoji:'💡',color:'#8e24aa',
+  desc:'문을 열면 바닥에 로고를 비추는 감성 라이트.',detail:['도어 열림 자동 점등','무배선 자석형','방수 IP65'],url:'#'},
+ {id:'sm2',cat:'스마트 액세서리',name:'15W 무선충전 마운트',brand:'JOUWA',price:'39,000원',platform:'JOUWA',emoji:'📱',color:'#5e35b1',
+  desc:'스크린 옆에서 폰을 고속 무선충전.',detail:['최대 15W 고속충전','에어벤트·화면 옆 장착','자동 클램프'],url:'#'},
+ {id:'dr1',cat:'주행·안전',name:'하이패스 단말기 (EV 감면)',brand:'몰',price:'55,000원',platform:'네이버',emoji:'🛣️',color:'#43a047',
+  desc:'전기차 통행료 감면 등록을 지원하는 하이패스.',detail:['EV 통행료 감면 등록','태양광 보조 충전','간편 등록'],url:'#'},
+ {id:'dr2',cat:'주행·안전',name:'차량용 소화기 (법규 인증)',brand:'쿠팡',price:'18,900원',platform:'쿠팡',emoji:'🧯',color:'#e53935',
+  desc:'차량 비치 의무 대응 분말 소화기.',detail:['자동차 겸용 인증','거치 브래킷 포함','1.5kg'],url:'#'},
+];
+let shopCat='전체';
+function shopCats(){ return ['전체',...[...new Set(PRODUCTS.map(p=>p.cat))]]; }
+function platClass(pl){ return {'쿠팡':'coupang','알리익스프레스':'ali','네이버':'naver','JOUWA':'jouwa'}[pl]||'mall'; }
+function prodThumb(p){ return p.img?`background-image:url('${p.img}')`:`background:linear-gradient(135deg,${p.color},${p.color}bb)`; }
+function openShop(){ shopCat='전체'; renderShop(); $("#shop").classList.add("show"); }
+function closeShop(){ $("#shop").classList.remove("show"); }
+function setShopCat(c){ shopCat=c; renderShop(); $("#shop").scrollTop=0; }
+function renderShop(){
+  const chips=shopCats().map(c=>`<button class="scat ${c===shopCat?'active':''}" onclick="setShopCat('${c}')">${c}</button>`).join('');
+  const items=PRODUCTS.filter(p=>shopCat==='전체'||p.cat===shopCat);
+  const grid=items.map(p=>`<div class="prod-card" onclick="openProduct('${p.id}')">
+      <div class="prod-thumb" style="${prodThumb(p)}">${p.img?'':`<span>${p.emoji}</span>`}<span class="plat ${platClass(p.platform)}">${p.platform}</span></div>
+      <div class="prod-b"><div class="prod-name">${p.name}</div><div class="prod-price">${p.price}</div></div>
+    </div>`).join('');
+  $("#shop").innerHTML=`
+    <div class="shop-hd">
+      <div class="shop-title">🛍️ 테슬라 용품샵</div>
+      <button class="shop-close" onclick="closeShop()">×</button>
+    </div>
+    <div class="shop-note">상품을 누르면 상세 설명 후 판매처로 이동합니다 · 파트너스 링크 포함</div>
+    <div class="shop-cats">${chips}</div>
+    <div class="shop-grid">${grid}</div>
+    <div style="height:40px"></div>`;
+}
+function openProduct(id){
+  const p=PRODUCTS.find(x=>x.id===id); if(!p) return;
+  const feats=(p.detail||[]).map(d=>`<li>${d}</li>`).join('');
+  const live=p.url&&p.url!=='#';
+  $("#shop").innerHTML=`
+    <div class="shop-hd">
+      <button class="shop-back" onclick="renderShop()">‹ 목록</button>
+      <div class="shop-title">상품 정보</div>
+      <button class="shop-close" onclick="closeShop()">×</button>
+    </div>
+    <div class="prod-detail">
+      <div class="pd-thumb" style="${prodThumb(p)}">${p.img?'':`<span>${p.emoji}</span>`}</div>
+      <div class="pd-plat"><span class="plat ${platClass(p.platform)}">${p.platform}</span><span class="pd-cat">${p.cat}</span></div>
+      <div class="pd-name">${p.name}</div>
+      <div class="pd-brand">${p.brand}</div>
+      <div class="pd-price">${p.price}</div>
+      <div class="pd-desc">${p.desc}</div>
+      <div class="pd-sec">주요 특징</div>
+      <ul class="pd-feats">${feats}</ul>
+    </div>
+    <div class="pd-buy">
+      <a class="pd-buybtn ${live?'':'disabled'}" id="pdBuy" href="${live?p.url:'javascript:void(0)'}" ${live?'target="_blank" rel="noopener"':''}>${p.platform}에서 구매하기 ›</a>
+    </div>`;
+  if(!live){ const b=$("#pdBuy"); if(b) b.onclick=()=>toast("레퍼럴 링크를 등록하면 판매처로 이동합니다"); }
+  $("#shop").scrollTop=0;
+}
 
 /* ============ Map ============ */
 let map, markerLayer, meMarker;
@@ -551,7 +782,6 @@ function locate(auto){
 
 /* ============ Controls ============ */
 function render(){
-  $("#hdrCount").textContent = `전국 ${DATA.length}곳`;
   if(S.view==='list'){ $("#list").style.display=""; $("#mapWrap").style.display="none"; renderList(); }
   else { $("#list").style.display="none"; $("#mapWrap").style.display=""; $("#summary").innerHTML=`<span>지도에 <b style="color:var(--txt)">${filtered().filter(c=>c.lat).length}</b>곳 표시</span>`;
     setTimeout(()=>{renderMap(); map.invalidateSize();},50); }
@@ -569,6 +799,7 @@ function bind(){
   const vc=$('.chip.val'); vc.onclick=()=>{S.val=S.val?0:8; vc.classList.toggle("active",!!S.val); render();};
   $("#search").oninput=e=>{S.q=e.target.value.trim(); render();};
   $("#geoBtn").onclick=()=>locate(false);
+  $("#shopBtn").onclick=openShop;
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
     t.classList.add("active"); S.view=t.dataset.view; render();
