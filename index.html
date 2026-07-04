@@ -207,9 +207,6 @@ main{padding:12px 14px 30px}
 .ft-title{font-size:14px;font-weight:800}
 .ft-by{font-size:11.5px;color:var(--muted);margin-top:3px}
 .ft-by b{color:var(--red2)}
-.ft-msg{font-size:12.5px;color:var(--muted);line-height:1.7;background:var(--card);border:1px solid var(--line);
-  border-radius:13px;padding:15px 16px}
-.ft-msg a{color:var(--red2);font-weight:800;text-decoration:underline}
 .ft-copy{font-size:10.5px;color:var(--muted2);margin-top:15px;text-align:center;line-height:1.6}
 </style>
 </head>
@@ -267,10 +264,6 @@ main{padding:12px 14px 30px}
       <div class="ft-title">테슬라 슈퍼차저 맵</div>
       <div class="ft-by">powered by <b>inspirain</b></div>
     </div>
-  </div>
-  <div class="ft-msg">
-    수정·업데이트를 원하시거나 정보 오류를 발견하시면<br>
-    <a href="mailto:tesla@inspirain.kr?subject=[슈퍼차저맵]%20문의">tesla@inspirain.kr</a> 로 메일 보내주세요.
   </div>
   <div class="ft-copy">전국 슈퍼차저 167곳 · 평점·후기 데이터 기반 · © inspirain</div>
 </footer>
@@ -537,19 +530,22 @@ function renderMap(){
 function openById(id){ openSheet(DATA.find(c=>c.id===id)); }
 
 /* ============ Geolocation ============ */
-function locate(){
-  if(!navigator.geolocation){ toast("위치 기능을 지원하지 않아요"); return; }
+const GEO_ON=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>내 위치`;
+const GEO_OFF=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="4"/></svg>내 위치`;
+function locate(auto){
+  if(!navigator.geolocation){ if(!auto) toast("위치 기능을 지원하지 않아요"); return; }
   const b=$("#geoBtn"); b.innerHTML="측정중…";
   navigator.geolocation.getCurrentPosition(p=>{
     S.me=[p.coords.latitude,p.coords.longitude];
-    b.classList.add("on"); b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>내 위치`;
+    b.classList.add("on"); b.innerHTML=GEO_ON;
     S.sort="dist"; $("#sortSel").value="dist";
-    toast("현재 위치를 찾았어요 · 가까운순 정렬");
+    toast("현재 위치 기준 가까운순으로 정렬했어요");
     render();
     if(S.view==='map' && map){ map.setView(S.me,11); }
   },err=>{
-    b.innerHTML="내 위치";
-    toast(err.code===1?"위치 권한이 거부되었어요":"위치를 찾지 못했어요");
+    b.classList.remove("on"); b.innerHTML=GEO_OFF;
+    if(!auto) toast(err.code===1?"위치 권한이 거부되었어요":"위치를 찾지 못했어요");
+    else if(err.code===1) toast("‘내 위치’를 누르면 가까운순으로 정렬돼요");
   },{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
 }
 
@@ -572,13 +568,13 @@ function bind(){
   const fc=$('.chip.free'); fc.onclick=()=>{S.free=!S.free; fc.classList.toggle("active",S.free); render();};
   const vc=$('.chip.val'); vc.onclick=()=>{S.val=S.val?0:8; vc.classList.toggle("active",!!S.val); render();};
   $("#search").oninput=e=>{S.q=e.target.value.trim(); render();};
-  $("#geoBtn").onclick=locate;
+  $("#geoBtn").onclick=()=>locate(false);
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
     t.classList.add("active"); S.view=t.dataset.view; render();
   });
 }
-bind(); render();
+bind(); render(); locate(true);
 </script>
 </body>
 </html>
