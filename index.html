@@ -19,16 +19,18 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
   overscroll-behavior:none}
 body{padding-bottom:env(safe-area-inset-bottom)}
 #app{position:relative;width:100%;min-height:100vh;background:var(--bg)}
-/* PC: 모바일 화면을 가운데 폰 프레임으로 */
+#scroll{width:100%}
+/* PC: 모바일 화면을 가운데 폰 프레임으로 (오버레이는 프레임 뷰포트에 고정) */
 @media (min-width:600px){
   html{background:#050506}
   body{padding-bottom:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
     background:radial-gradient(1100px 760px at 50% -5%, #17171e, #050506 62%)}
   #app{width:412px;max-width:412px;height:90vh;max-height:920px;min-height:0;
-    overflow-y:auto;overflow-x:hidden;border-radius:36px;
+    overflow:hidden;border-radius:36px;
     box-shadow:0 0 0 2px #1c1c22, 0 0 0 12px #0c0c0f, 0 0 0 13px #2a2a33, 0 40px 100px rgba(0,0,0,.75);
     transform:translateZ(0)}
-  #app::-webkit-scrollbar{width:0;height:0}
+  #scroll{height:100%;overflow-y:auto;overflow-x:hidden}
+  #scroll::-webkit-scrollbar{width:0;height:0}
   #map{height:calc(90vh - 210px);max-height:710px}
 }
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
@@ -303,6 +305,7 @@ main{padding:12px 14px 30px}
 </head>
 <body>
 <div id="app">
+<div id="scroll">
 <header>
   <div class="brand">
     <img class="logo" src="logo/tesla-logo.png?v=2" alt="Tesla">
@@ -359,6 +362,7 @@ main{padding:12px 14px 30px}
   </div>
   <div class="ft-copy">전국 슈퍼차저 167곳 · 평점·후기 데이터 기반 · © inspirain</div>
 </footer>
+</div><!-- /#scroll -->
 
 <div class="overlay" id="overlay"></div>
 <div class="sheet" id="sheet"></div>
@@ -582,6 +586,12 @@ function openSheet(c){
 function closeSheet(){ const sh=$("#sheet"); sh.style.transform=""; sh.classList.remove("show"); $("#overlay").classList.remove("show"); }
 $("#overlay").onclick=closeSheet;
 $("#navOverlay").onclick=closeNav;
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if($("#shop").classList.contains('show')) closeShop();
+  else if($("#navSheet").classList.contains('show')) closeNav();
+  else if($("#sheet").classList.contains('show')) closeSheet();
+});
 
 /* ===== Swipe to dismiss detail sheet (아래로/좌로 스와이프) ===== */
 (function(){
