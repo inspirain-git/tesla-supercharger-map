@@ -102,8 +102,10 @@ main{padding:12px 14px 30px}
 .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--barcol,var(--muted2))}
 .card .top{display:flex;gap:12px;align-items:flex-start}
 .rankbadge{flex-shrink:0;width:30px;height:30px;border-radius:9px;background:var(--card2);
-  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--muted)}
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--muted);
+  line-height:1;text-align:center}
 .rankbadge.top{background:linear-gradient(135deg,var(--gold),#ff8a00);color:#1a1a20}
+.rankbadge.medal{background:none;font-size:23px;line-height:1}
 .cardmain{flex:1;min-width:0}
 .cname{font-size:15.5px;font-weight:800;line-height:1.25;margin:0 0 3px}
 .cmeta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11.5px;color:var(--muted)}
@@ -536,7 +538,7 @@ function sortLabel(){ return {total:"총평점순",value:"가성비순",score:"�
 function cardEl(c,i){
   const card=el("div","card");
   card.style.setProperty("--barcol",scoreColor(c.total));
-  const rank = i<3?`<div class="rankbadge top">${i+1}</div>`:`<div class="rankbadge">${i+1}</div>`;
+  const rank = i<3?`<div class="rankbadge medal">${['🥇','🥈','🥉'][i]}</div>`:`<div class="rankbadge">${i+1}</div>`;
   const dist = c._d!=null?`<span class="pill dist">📍 ${fmtDist(c._d)}</span>`:"";
   const free = c.isFree?`<span class="pill free">무료주차</span>`:"";
   const bars = [["충전",c.perf],["편의",c.amenity],["주차비",c.cost],["접근",c.access]]
