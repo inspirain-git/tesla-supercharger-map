@@ -906,10 +906,18 @@ function openProduct(id){
       ${feats?`<div class="pd-sec">주요 특징</div><ul class="pd-feats">${feats}</ul>`:''}
     </div>
     <div class="pd-buy">
-      <a class="pd-buybtn ${live?'':'disabled'}" id="pdBuy" href="${live?p.url:'javascript:void(0)'}" ${live?'target="_blank" rel="noopener"':''}>${p.platform}에서 구매하기 ›</a>
+      <a class="pd-buybtn ${live?'':'disabled'}" id="pdBuy" href="${live?p.url:'#'}" ${live?'target="_blank" rel="noopener"':''} data-url="${live?p.url:''}" onclick="return buyClick(event)">${p.platform}에서 구매하기 ›</a>
     </div>`;
-  if(!live){ const b=$("#pdBuy"); if(b) b.onclick=()=>toast("레퍼럴 링크를 등록하면 판매처로 이동합니다"); }
   $("#shop").scrollTop=0;
+}
+// 새 탭이 막히는 인앱 브라우저/팝업차단 환경에서도 열리도록 폴백 처리
+function buyClick(e){
+  const url=e.currentTarget.dataset.url;
+  if(!url){ e.preventDefault(); toast("레퍼럴 링크를 등록하면 판매처로 이동합니다"); return false; }
+  e.preventDefault();
+  let w=null; try{ w=window.open(url,'_blank','noopener'); }catch(_){}
+  if(!w){ location.href=url; }   // 팝업 차단 시 같은 탭에서 이동
+  return false;
 }
 
 /* ============ Map ============ */
