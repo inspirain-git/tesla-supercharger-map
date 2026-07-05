@@ -582,7 +582,13 @@ const NAV_WEB = {
   naver: c=>`https://map.naver.com/p/directions/-/-/${c.lng},${c.lat},${encodeURIComponent(c.name)}/-/car`,
 };
 const NAV_LABEL = {tmap:"티맵", kakao:"카카오맵", naver:"네이버맵"};
+function userRegion(lat,lng){
+  let best=null,bd=1e9;
+  for(const c of DATA){ if(c.lat==null) continue; const d=(c.lat-lat)**2+(c.lng-lng)**2; if(d<bd){bd=d;best=c;} }
+  return best?best.region:null;
+}
 function launchNav(prov,c){
+  if(window.__track) window.__track('nav',{app:prov,id:c.id,title:c.title,region:c.region});
   closeNav();
   const scheme=NAV_SCHEME[prov](c), web=NAV_WEB[prov]?NAV_WEB[prov](c):null;
   const start=performance.now();
@@ -926,6 +932,7 @@ function copyCoupon(code){
 }
 function openProduct(id){
   const p=PRODUCTS.find(x=>x.id===id); if(!p) return;
+  if(window.__track) window.__track('product_view',{id:p.id,name:p.name});
   const feats=(p.detail||[]).map(d=>`<li>${d}</li>`).join('');
   const live=p.url&&p.url!=='#';
   $("#shop").innerHTML=`
@@ -949,13 +956,14 @@ function openProduct(id){
       ${feats?`<div class="pd-sec">주요 특징</div><ul class="pd-feats">${feats}</ul>`:''}
     </div>
     <div class="pd-buy">
-      <a class="pd-buybtn ${live?'':'disabled'}" id="pdBuy" href="${live?p.url:'#'}" ${live?'target="_blank" rel="noopener"':''} data-url="${live?p.url:''}" onclick="return buyClick(event)">${p.platform}에서 구매하기 ›</a>
+      <a class="pd-buybtn ${live?'':'disabled'}" id="pdBuy" href="${live?p.url:'#'}" ${live?'target="_blank" rel="noopener"':''} data-url="${live?p.url:''}" data-pid="${p.id}" data-pname="${p.name}" onclick="return buyClick(event)">${p.platform}에서 구매하기 ›</a>
     </div>`;
   $("#shop").scrollTop=0;
 }
 function buyClick(e){
-  const url=e.currentTarget.dataset.url;
+  const a=e.currentTarget, url=a.dataset.url;
   if(!url){ e.preventDefault(); toast("레퍼럴 링크를 등록하면 판매처로 이동합니다"); return false; }
+  if(window.__track) window.__track('product_click',{id:a.dataset.pid,name:a.dataset.pname});
   // 라이브 링크는 앵커 기본동작(target=_blank)으로 '새 탭만' 열림 · 현재 사이트는 이동하지 않음
   return true;
 }
@@ -1005,6 +1013,7 @@ function locate(auto){
   const b=$("#geoBtn"); b.innerHTML="측정중…";
   navigator.geolocation.getCurrentPosition(p=>{
     S.me=[p.coords.latitude,p.coords.longitude];
+    if(window.__track) window.__track('geo',{region:userRegion(S.me[0],S.me[1])});
     b.classList.add("on"); b.innerHTML=GEO_ON;
     S.sort="dist"; $("#sortSel").value="dist";
     toast("현재 위치 기준 가까운순으로 정렬했어요");
@@ -1034,7 +1043,11 @@ function bind(){
     S.kw.has(k)?S.kw.delete(k):S.kw.add(k); render(); });
   const fc=$('.chip.free'); fc.onclick=()=>{S.free=!S.free; fc.classList.toggle("active",S.free); render();};
   const vc=$('.chip.val'); vc.onclick=()=>{S.val=S.val?0:8; vc.classList.toggle("active",!!S.val); render();};
-  $("#search").oninput=e=>{S.q=e.target.value.trim(); render();};
+  let _searchT;
+  $("#search").oninput=e=>{S.q=e.target.value.trim(); render();
+    clearTimeout(_searchT);
+    _searchT=setTimeout(()=>{ if(S.q.length>=2 && window.__track) window.__track('search',{q:S.q.slice(0,60)}); },1500);
+  };
   $("#geoBtn").onclick=()=>locate(false);
   $("#shopBtn").onclick=openShop;
   $("#serviceBtn").onclick=openService;
@@ -1048,7 +1061,7 @@ bind(); render(); locate(true);
 <!-- ===== Firestore 상품 로더 (있으면 DB 우선, 없으면 내장 데이터 폴백) ===== -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 const firebaseConfig = {
   apiKey: "AIzaSyBhEpDS14pcMxYO8tTAAObOQLEFTyjt3gk",
   authDomain: "suchagak.firebaseapp.com",
@@ -1059,6 +1072,11 @@ const firebaseConfig = {
 };
 try{
   const db = getFirestore(initializeApp(firebaseConfig));
+  // ===== 방문/이벤트 수집 (관리자 퍼포먼스 대시보드용) =====
+  let cid=localStorage.getItem('scg_cid');
+  if(!cid){ cid=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():'c'+Date.now()+Math.random().toString(36).slice(2); localStorage.setItem('scg_cid',cid); }
+  window.__track=function(t,data){ try{ addDoc(collection(db,"events"),Object.assign({t:String(t),cid:cid,ts:serverTimestamp()},data||{})).catch(()=>{}); }catch(_){} };
+  window.__track('pageview',{});
   const snap = await getDocs(query(collection(db,"products"), orderBy("ord")));
   if(!snap.empty){
     const arr = snap.docs.map(d=>{ const p=d.data();

@@ -50,6 +50,30 @@ label{display:block;font-size:12px;color:var(--sub);margin:10px 0 4px}
 .toast.show{opacity:1}
 .hidden{display:none!important}
 .banner{background:#22304a;border:1px solid #33507d;color:#cfe0ff;padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px}
+/* tabs + 퍼포먼스 대시보드 */
+.tabs{display:flex;gap:8px;margin:14px 0}
+.tab{flex:1;background:var(--card2);border:1px solid var(--line);color:var(--sub);padding:10px;font-size:14px;font-weight:700;border-radius:10px}
+.tab.active{background:var(--red);border-color:var(--red);color:#fff}
+.perftop{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.perftop .count{margin-left:0;flex:1}
+.statgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat .v{font-size:26px;font-weight:800;line-height:1}
+.stat .l{font-size:12px;color:var(--sub);margin-top:6px}
+.stat .s{font-size:11px;color:var(--sub);margin-top:6px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 15px;margin-bottom:14px}
+.panel h3{margin:0 0 12px;font-size:14px;display:flex;gap:6px;align-items:center}
+.bar{display:flex;align-items:center;gap:10px;margin:8px 0}
+.bar .bl{font-size:13px;width:40%;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .bt{flex:1;background:var(--card2);border-radius:6px;height:18px;overflow:hidden}
+.bar .bf{height:100%;background:linear-gradient(90deg,var(--red),#ff7a6a);border-radius:6px;min-width:2px}
+.bar .bc{font-size:12px;color:var(--sub);width:52px;text-align:right;flex-shrink:0}
+table.ptbl{width:100%;border-collapse:collapse;font-size:13px}
+.ptbl th,.ptbl td{padding:8px 5px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.ptbl th:first-child,.ptbl td:first-child{text-align:left;white-space:normal}
+.ptbl th{color:var(--sub);font-weight:600;font-size:11px}
+.ptbl .ctr{font-weight:800;color:var(--ok)}
+.empty{color:var(--sub);font-size:13px;padding:6px 0}
 </style>
 </head>
 <body>
@@ -71,14 +95,30 @@ label{display:block;font-size:12px;color:var(--sub);margin:10px 0 4px}
     <button class="btn ghost sm" id="logoutBtn">로그아웃</button>
   </header>
   <div class="wrap">
-    <div id="storageBanner" class="banner hidden">ℹ️ 사진 업로드(Storage)가 아직 켜져 있지 않아요. 지금은 <b>이미지 URL 붙여넣기</b>로 넣을 수 있고, Storage를 켜면 파일 업로드가 됩니다.</div>
-    <div class="toolbar">
-      <button class="btn" id="addBtn">＋ 새 상품</button>
-      <button class="btn ghost" id="seedBtn">현재 상품 31개 가져오기</button>
-      <span class="count" id="count"></span>
+    <div class="tabs">
+      <button class="tab active" id="tabBtnProducts">🛍️ 상품 관리</button>
+      <button class="tab" id="tabBtnPerf">📊 퍼포먼스</button>
     </div>
-    <div id="list"></div>
-    <div style="height:60px"></div>
+
+    <div id="tabProducts">
+      <div id="storageBanner" class="banner hidden">ℹ️ 사진 업로드(Storage)가 아직 켜져 있지 않아요. 지금은 <b>이미지 URL 붙여넣기</b>로 넣을 수 있고, Storage를 켜면 파일 업로드가 됩니다.</div>
+      <div class="toolbar">
+        <button class="btn" id="addBtn">＋ 새 상품</button>
+        <button class="btn ghost" id="seedBtn">현재 상품 31개 가져오기</button>
+        <span class="count" id="count"></span>
+      </div>
+      <div id="list"></div>
+      <div style="height:60px"></div>
+    </div>
+
+    <div id="tabPerf" class="hidden">
+      <div class="perftop">
+        <span class="count" id="perfMeta">불러오는 중…</span>
+        <button class="btn ghost sm" id="perfReload">↻ 새로고침</button>
+      </div>
+      <div id="perfBody"></div>
+      <div style="height:60px"></div>
+    </div>
   </div>
 </div>
 
@@ -87,7 +127,7 @@ label{display:block;font-size:12px;color:var(--sub);margin:10px 0 4px}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
 const firebaseConfig = {
@@ -266,6 +306,92 @@ $("#seedBtn").onclick=async ()=>{
     toast(n+"개 가져오기 완료!"); loadProducts();
   }catch(e){ toast("가져오기 실패: "+(e.code||e.message)); }
 };
+
+/* ---------- 탭 전환 ---------- */
+let perfLoaded=false;
+function showTab(which){
+  const isP=which==='perf';
+  $("#tabProducts").classList.toggle("hidden",isP);
+  $("#tabPerf").classList.toggle("hidden",!isP);
+  $("#tabBtnProducts").classList.toggle("active",!isP);
+  $("#tabBtnPerf").classList.toggle("active",isP);
+  if(isP && !perfLoaded){ perfLoaded=true; loadPerf(); }
+}
+$("#tabBtnProducts").onclick=()=>showTab('products');
+$("#tabBtnPerf").onclick=()=>showTab('perf');
+$("#perfReload").onclick=()=>loadPerf();
+
+/* ---------- 퍼포먼스 대시보드 ---------- */
+function tsMs(e){ const t=e.ts; if(!t) return null; if(typeof t.toDate==='function') return t.toDate().getTime(); if(t.seconds) return t.seconds*1000; return null; }
+function groupTop(arr,keyFn,n){
+  const m=new Map();
+  arr.forEach(e=>{ const k=keyFn(e); if(k==null||k==='') return; m.set(k,(m.get(k)||0)+1); });
+  return [...m.entries()].map(([label,count])=>({label,count})).sort((a,b)=>b.count-a.count).slice(0,n);
+}
+function barList(entries){
+  if(!entries.length) return '<div class="empty">아직 데이터가 없어요</div>';
+  const max=entries[0].count||1;
+  return entries.map(e=>`<div class="bar"><div class="bl">${esc(String(e.label))}</div>
+    <div class="bt"><div class="bf" style="width:${Math.round(e.count/max*100)}%"></div></div>
+    <div class="bc">${e.count}</div></div>`).join('');
+}
+async function loadPerf(){
+  $("#perfMeta").textContent='불러오는 중…';
+  $("#perfBody").innerHTML='<div class="hint">이벤트 집계 중…</div>';
+  let evs=[];
+  try{
+    const snap=await getDocs(query(collection(db,"events"), orderBy("ts","desc"), limit(5000)));
+    evs=snap.docs.map(d=>d.data());
+  }catch(e){
+    $("#perfMeta").textContent='';
+    $("#perfBody").innerHTML='<div class="banner">이벤트를 불러오지 못했어요: '+(e.code||e.message)+'<br>Firestore 보안 규칙에 <b>events</b> 읽기 권한(관리자)이 있는지 확인하세요.</div>';
+    return;
+  }
+  renderPerf(evs);
+}
+function renderPerf(evs){
+  const now=Date.now(), DAY=864e5;
+  const t0=new Date(); t0.setHours(0,0,0,0); const todayMs=t0.getTime();
+  const pv=evs.filter(e=>e.t==='pageview');
+  const uniq=new Set(pv.map(e=>e.cid).filter(Boolean)).size;
+  const pvToday=pv.filter(e=>{const m=tsMs(e); return m&&m>=todayMs;}).length;
+  const pv7=pv.filter(e=>{const m=tsMs(e); return m&&m>=now-7*DAY;}).length;
+  const navs=evs.filter(e=>e.t==='nav');
+  const searches=evs.filter(e=>e.t==='search');
+  const geos=evs.filter(e=>e.t==='geo');
+  const pViews=evs.filter(e=>e.t==='product_view');
+  const pClicks=evs.filter(e=>e.t==='product_click');
+
+  const navApp=groupTop(navs,e=>({tmap:'티맵',kakao:'카카오맵',naver:'네이버맵'}[e.app]||e.app),5);
+  const navTop=groupTop(navs,e=>e.title,8);
+  const searchTop=groupTop(searches,e=>String(e.q||'').trim().toLowerCase(),12);
+  const regionTop=groupTop(geos,e=>e.region,12);
+
+  const vmap=new Map(), cmap=new Map(), nameMap=new Map();
+  pViews.forEach(e=>{ vmap.set(e.id,(vmap.get(e.id)||0)+1); if(e.name)nameMap.set(e.id,e.name); });
+  pClicks.forEach(e=>{ cmap.set(e.id,(cmap.get(e.id)||0)+1); if(e.name)nameMap.set(e.id,e.name); });
+  const ids=new Set([...vmap.keys(),...cmap.keys()]);
+  const prodRows=[...ids].map(id=>{ const v=vmap.get(id)||0,c=cmap.get(id)||0; return {name:nameMap.get(id)||id,views:v,clicks:c,ctr:v?c/v*100:0}; })
+    .sort((a,b)=>b.clicks-a.clicks||b.views-a.views).slice(0,30);
+
+  $("#perfMeta").textContent=`이벤트 ${evs.length.toLocaleString()}건 집계 (최근순 최대 5,000건)`;
+  $("#perfBody").innerHTML=`
+    <div class="statgrid">
+      <div class="stat"><div class="v">${pv.length.toLocaleString()}</div><div class="l">총 방문(페이지뷰)</div><div class="s">오늘 ${pvToday} · 최근7일 ${pv7}</div></div>
+      <div class="stat"><div class="v">${uniq.toLocaleString()}</div><div class="l">순 방문자(기기 기준)</div><div class="s">브라우저 로컬 식별</div></div>
+      <div class="stat"><div class="v">${navs.length.toLocaleString()}</div><div class="l">길안내 실행</div><div class="s">전체 네비 클릭</div></div>
+      <div class="stat"><div class="v">${pClicks.length.toLocaleString()}</div><div class="l">상점 링크 클릭</div><div class="s">상품 조회 ${pViews.length}</div></div>
+    </div>
+    <div class="panel"><h3>🧭 많이 쓰는 길안내 앱</h3>${barList(navApp)}</div>
+    <div class="panel"><h3>📍 위치기반 유저 지역 분포</h3>${barList(regionTop)}</div>
+    <div class="panel"><h3>🔎 인기 검색어</h3>${barList(searchTop)}</div>
+    <div class="panel"><h3>🚗 길안내 많이 찍는 충전소 TOP</h3>${barList(navTop)}</div>
+    <div class="panel"><h3>🛍️ 상점 링크 클릭률(CTR)</h3>
+      ${prodRows.length?`<table class="ptbl"><thead><tr><th>상품</th><th>조회</th><th>클릭</th><th>CTR</th></tr></thead><tbody>
+        ${prodRows.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.views}</td><td>${r.clicks}</td><td class="ctr">${r.views?r.ctr.toFixed(0)+'%':'-'}</td></tr>`).join('')}
+      </tbody></table>`:'<div class="empty">아직 데이터가 없어요</div>'}
+    </div>`;
+}
 </script>
 </body>
 </html>
