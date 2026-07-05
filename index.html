@@ -809,29 +809,44 @@ function sponsorSection(c){
 }
 
 /* ===== 용품샵 (레퍼럴/파트너스 링크) =====
-   PRODUCTS 배열에 상품 추가 · platform: 쿠팡/알리익스프레스/네이버/JOUWA/몰
-   url 을 레퍼럴 링크로 교체하면 구매버튼이 바로 동작합니다. */
+   platform: 알리익스프레스/쿠팡/네이버/JOUWA/몰
+   ▶ 알리 어필리에이트 링크 받는 법: portals.aliexpress.com 가입 → Link Generator에
+     상품 URL 붙여넣기 → 생성된 s.click.aliexpress.com 링크를 아래 각 상품 url 에 교체.
+     (지금은 url:'#' 플레이스홀더 → 링크 넣으면 '구매하기' 버튼이 바로 동작) */
 const PRODUCTS=[
- {id:'ch1',cat:'충전·전력',name:'테슬라 이동형 충전기 (3핀)',brand:'JOUWA',price:'89,000원',platform:'JOUWA',emoji:'🔌',color:'#e53935',
-  desc:'가정용 콘센트로 어디서나 완속 충전. 여행·출장 시 비상 충전에 필수.',detail:['최대 3.5kW 완속 충전','과열·과전류 안전 차단 회로','휴대용 파우치 포함','모델 3/Y/S/X 호환'],url:'#'},
- {id:'ch2',cat:'충전·전력',name:'충전 케이블 정리 홀더',brand:'ALI',price:'12,900원',platform:'알리익스프레스',emoji:'🧵',color:'#ff6a00',
-  desc:'트렁크 속 충전 케이블을 깔끔하게 감아 보관.',detail:['벽·트렁크 부착형','케이블 꼬임 방지','실리콘 미끄럼 방지'],url:'#'},
- {id:'in1',cat:'인테리어·수납',name:'센터콘솔 하단 수납 트레이',brand:'JOUWA',price:'19,900원',platform:'쿠팡',emoji:'🗄️',color:'#3f51b5',
-  desc:'모델Y 전용, 콘솔 하단 빈 공간을 알뜰하게 활용.',detail:['모델Y 2020–2024 전용','미끄럼 방지 러버','설치 5초, 탈부착 간편'],url:'#'},
- {id:'in2',cat:'인테리어·수납',name:'도어·대시 우드 트림 세트',brand:'몰',price:'34,000원',platform:'네이버',emoji:'🪵',color:'#795548',
-  desc:'인테리어 포인트를 살리는 우드그레인 트림.',detail:['무광 우드 마감','3M 테이프 부착','모델3/Y 호환'],url:'#'},
- {id:'wa1',cat:'세차·관리',name:'발수 코팅 스프레이',brand:'ALI',price:'15,500원',platform:'알리익스프레스',emoji:'💧',color:'#00acc1',
+ // ── 보호·필름 ──
+ {id:'a1',cat:'보호·필름',name:'센터 스크린 강화유리 보호필름',brand:'AliExpress',price:'8,900원',platform:'알리익스프레스',emoji:'📱',color:'#00838f',
+  desc:'모델3/Y 센터 디스플레이 기스·지문 방지 강화유리.',detail:['9H 강화유리 · 지문방지 코팅','모델3/Y 15인치 전용 재단','기포 없는 부착 키트 포함','터치 감도 유지'],url:'#'},
+ {id:'a2',cat:'보호·필름',name:'도어 스커프 · 문턱 보호필름',brand:'AliExpress',price:'6,500원',platform:'알리익스프레스',emoji:'🛡️',color:'#00838f',
+  desc:'승하차 시 긁히는 문턱(스커프)을 투명 필름으로 보호.',detail:['카본/투명 택1','앞뒤 4피스 세트','정밀 재단 · 3M 접착','모델3/Y 호환'],url:'#'},
+ {id:'a3',cat:'보호·필름',name:'센터콘솔 랩핑 보호필름',brand:'AliExpress',price:'7,900원',platform:'알리익스프레스',emoji:'✨',color:'#00838f',
+  desc:'무광 피아노블랙 콘솔의 기스·지문을 막는 랩핑 필름.',detail:['무광/카본/우드 택1','기스·지문 방지','재단형 · 초보도 부착 쉬움'],url:'#'},
+ // ── 인테리어·수납 ──
+ {id:'a4',cat:'인테리어·수납',name:'모델Y 센터콘솔 하단 수납함',brand:'AliExpress',price:'11,900원',platform:'알리익스프레스',emoji:'🗄️',color:'#3f51b5',
+  desc:'콘솔 하단 빈 공간을 활용하는 전용 정리 트레이.',detail:['모델Y 2021~2024 전용','미끄럼 방지 러버','탈부착 간편'],url:'#'},
+ {id:'a5',cat:'인테리어·수납',name:'도어 사이드 수납 매트 세트',brand:'AliExpress',price:'9,900원',platform:'알리익스프레스',emoji:'🚪',color:'#3f51b5',
+  desc:'도어 포켓·콘솔 홈의 소음·긁힘 방지 실리콘 매트.',detail:['도어·콘솔 풀세트','소음·잡소리 방지','물세척 가능','모델3/Y 호환'],url:'#'},
+ {id:'a6',cat:'인테리어·수납',name:'트렁크·프렁크 정리 박스',brand:'AliExpress',price:'13,900원',platform:'알리익스프레스',emoji:'📦',color:'#3f51b5',
+  desc:'트렁크/프렁크 짐 흔들림을 잡는 접이식 수납 박스.',detail:['접이식 · 미사용 시 납작','방수 내피','손잡이 포함'],url:'#'},
+ // ── 스마트 액세서리 ──
+ {id:'a7',cat:'스마트 액세서리',name:'도어 웰컴 프로젝션 라이트',brand:'AliExpress',price:'14,900원',platform:'알리익스프레스',emoji:'💡',color:'#8e24aa',
+  desc:'문을 열면 바닥에 로고를 비추는 감성 라이트.',detail:['도어 열림 자동 점등','무배선 자석형 · 충전식','방수 IP65','2개 1세트'],url:'#'},
+ {id:'a8',cat:'스마트 액세서리',name:'실리콘 키카드 홀더 · 키링',brand:'AliExpress',price:'4,900원',platform:'알리익스프레스',emoji:'🔑',color:'#8e24aa',
+  desc:'테슬라 카드키를 목걸이·키링으로 휴대.',detail:['카드키 기스 방지','넥스트랩·키링 포함','다양한 컬러'],url:'#'},
+ {id:'a9',cat:'스마트 액세서리',name:'에어벤트 방향제 클립',brand:'AliExpress',price:'3,900원',platform:'알리익스프레스',emoji:'🌿',color:'#8e24aa',
+  desc:'모델3/Y 일자 송풍구에 딱 맞는 방향제 클립.',detail:['일자 벤트 전용 클립','리필 심지 포함','은은한 확산'],url:'#'},
+ // ── 세차·관리 ──
+ {id:'a10',cat:'세차·관리',name:'발수 코팅 스프레이',brand:'AliExpress',price:'7,900원',platform:'알리익스프레스',emoji:'💧',color:'#00acc1',
   desc:'세차 후 3분 만에 발수·광택 코팅.',detail:['물 뿌리고 닦기만','유리·도장·휠 겸용','약 3개월 지속'],url:'#'},
- {id:'wa2',cat:'세차·관리',name:'극세사 세차 타월 5매',brand:'쿠팡',price:'9,900원',platform:'쿠팡',emoji:'🧽',color:'#26a69a',
-  desc:'도장을 보호하는 초극세사 타월.',detail:['1200GSM 고밀도','무연마 엣지 처리','뛰어난 흡수력'],url:'#'},
- {id:'sm1',cat:'스마트 액세서리',name:'도어 웰컴 프로젝션 라이트',brand:'ALI',price:'22,000원',platform:'알리익스프레스',emoji:'💡',color:'#8e24aa',
-  desc:'문을 열면 바닥에 로고를 비추는 감성 라이트.',detail:['도어 열림 자동 점등','무배선 자석형','방수 IP65'],url:'#'},
- {id:'sm2',cat:'스마트 액세서리',name:'15W 무선충전 마운트',brand:'JOUWA',price:'39,000원',platform:'JOUWA',emoji:'📱',color:'#5e35b1',
-  desc:'스크린 옆에서 폰을 고속 무선충전.',detail:['최대 15W 고속충전','에어벤트·화면 옆 장착','자동 클램프'],url:'#'},
- {id:'dr1',cat:'주행·안전',name:'하이패스 단말기 (EV 감면)',brand:'몰',price:'55,000원',platform:'네이버',emoji:'🛣️',color:'#43a047',
-  desc:'전기차 통행료 감면 등록을 지원하는 하이패스.',detail:['EV 통행료 감면 등록','태양광 보조 충전','간편 등록'],url:'#'},
- {id:'dr2',cat:'주행·안전',name:'차량용 소화기 (법규 인증)',brand:'쿠팡',price:'18,900원',platform:'쿠팡',emoji:'🧯',color:'#e53935',
-  desc:'차량 비치 의무 대응 분말 소화기.',detail:['자동차 겸용 인증','거치 브래킷 포함','1.5kg'],url:'#'},
+ {id:'a11',cat:'세차·관리',name:'초극세사 세차 타월 5매',brand:'AliExpress',price:'6,900원',platform:'알리익스프레스',emoji:'🧽',color:'#00acc1',
+  desc:'도장을 보호하는 고밀도 극세사 타월.',detail:['1200GSM 고밀도','무연마 엣지','흡수력 우수'],url:'#'},
+ // ── 주행·안전 ──
+ {id:'a12',cat:'주행·안전',name:'알루미늄 페달 커버 세트',brand:'AliExpress',price:'12,900원',platform:'알리익스프레스',emoji:'🦶',color:'#43a047',
+  desc:'가속·브레이크 페달에 씌우는 논슬립 알루미늄 커버.',detail:['논슬립 고무 패드','볼트 고정 · 미끄럼 방지','모델3/Y 전용'],url:'#'},
+ {id:'a13',cat:'주행·안전',name:'머드가드(흙받이) 4P',brand:'AliExpress',price:'15,900원',platform:'알리익스프레스',emoji:'🛞',color:'#43a047',
+  desc:'휠하우스 오염·돌빵을 막는 앞뒤 흙받이 4개.',detail:['무타공 장착','앞뒤 4피스','모델3/Y 전용 재단'],url:'#'},
+ {id:'a14',cat:'주행·안전',name:'파노라마 루프 선셰이드',brand:'AliExpress',price:'24,900원',platform:'알리익스프레스',emoji:'☀️',color:'#43a047',
+  desc:'유리 지붕 햇빛·열 차단 차광막(앞+뒤).',detail:['UV·열 차단','앞·뒤 2피스','접이식 수납 파우치','모델3/Y 전용'],url:'#'},
 ];
 let shopCat='전체';
 function shopCats(){ return ['전체',...[...new Set(PRODUCTS.map(p=>p.cat))]]; }
