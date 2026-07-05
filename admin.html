@@ -340,7 +340,7 @@ async function loadPerf(){
   $("#perfBody").innerHTML='<div class="hint">이벤트 집계 중…</div>';
   let evs=[];
   try{
-    const snap=await getDocs(query(collection(db,"events"), orderBy("ts","desc"), limit(5000)));
+    const snap=await getDocs(collection(db,"events"));   // 전체 이벤트 집계 (저장은 무제한)
     evs=snap.docs.map(d=>d.data());
   }catch(e){
     $("#perfMeta").textContent='';
@@ -374,7 +374,7 @@ function renderPerf(evs){
   const prodRows=[...ids].map(id=>{ const v=vmap.get(id)||0,c=cmap.get(id)||0; return {name:nameMap.get(id)||id,views:v,clicks:c,ctr:v?c/v*100:0}; })
     .sort((a,b)=>b.clicks-a.clicks||b.views-a.views).slice(0,30);
 
-  $("#perfMeta").textContent=`이벤트 ${evs.length.toLocaleString()}건 집계 (최근순 최대 5,000건)`;
+  $("#perfMeta").textContent=`전체 이벤트 ${evs.length.toLocaleString()}건 집계`;
   $("#perfBody").innerHTML=`
     <div class="statgrid">
       <div class="stat"><div class="v">${pv.length.toLocaleString()}</div><div class="l">총 방문(페이지뷰)</div><div class="s">오늘 ${pvToday} · 최근7일 ${pv7}</div></div>
