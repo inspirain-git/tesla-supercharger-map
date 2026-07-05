@@ -57,10 +57,8 @@ label{display:block;font-size:12px;color:var(--sub);margin:10px 0 4px}
 <!-- 로그인 -->
 <div id="login">
   <div class="logo">슈<span>차</span>각 관리자</div>
-  <div class="sub">등록된 관리자만 접근할 수 있습니다</div>
-  <input id="lgEmail" type="email" placeholder="이메일" autocomplete="username">
-  <input id="lgPw" type="password" placeholder="비밀번호" autocomplete="current-password">
-  <button class="btn" id="lgBtn">로그인</button>
+  <div class="sub">관리자 Google 계정으로 로그인하세요</div>
+  <button class="btn" id="gBtn" style="width:100%;padding:11px">Google 계정으로 로그인</button>
   <div class="err" id="lgErr"></div>
 </div>
 
@@ -88,7 +86,7 @@ label{display:block;font-size:12px;color:var(--sub);margin:10px 0 4px}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
@@ -102,6 +100,7 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app), db = getFirestore(app), storage = getStorage(app);
+const ADMIN_EMAIL = "rain@inspirain.kr";   // 이 계정만 관리 권한
 
 const CAT_META = {
  "수납·정리":["🗄️","#3f51b5"], "매트·플로어":["🧩","#5d4037"], "보호·필름":["🛡️","#00838f"],
@@ -114,18 +113,25 @@ let toastT;
 function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
 function esc(s){ return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ---------- Auth ---------- */
-$("#lgBtn").onclick = async ()=>{
+/* ---------- Auth (Google) ---------- */
+const provider = new GoogleAuthProvider();
+$("#gBtn").onclick = async ()=>{
   $("#lgErr").textContent="";
-  try{ await signInWithEmailAndPassword(auth, $("#lgEmail").value.trim(), $("#lgPw").value); }
-  catch(e){ $("#lgErr").textContent = ({'auth/invalid-credential':'이메일 또는 비밀번호가 올바르지 않아요','auth/invalid-email':'이메일 형식이 올바르지 않아요','auth/too-many-requests':'시도가 너무 많아요. 잠시 후 다시 시도하세요'}[e.code]) || ('로그인 실패: '+e.code); }
+  try{ await signInWithPopup(auth, provider); }
+  catch(e){ $("#lgErr").textContent = ({'auth/unauthorized-domain':'이 도메인이 아직 승인되지 않았어요(콘솔에서 승인된 도메인에 추가 필요)','auth/popup-closed-by-user':'로그인 창이 닫혔어요','auth/popup-blocked':'팝업이 차단됐어요. 팝업 허용 후 다시 시도하세요'}[e.code]) || ('로그인 실패: '+e.code); }
 };
-$("#lgPw").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#lgBtn").click(); });
 $("#logoutBtn").onclick = ()=>signOut(auth);
 
 onAuthStateChanged(auth, user=>{
-  if(user){ $("#login").classList.add("hidden"); $("#app").classList.remove("hidden"); $("#who").textContent=user.email; loadProducts(); }
-  else{ $("#app").classList.add("hidden"); $("#login").classList.remove("hidden"); }
+  if(user && user.email===ADMIN_EMAIL){
+    $("#login").classList.add("hidden"); $("#app").classList.remove("hidden"); $("#who").textContent=user.email; loadProducts();
+  } else if(user){
+    // 권한 없는 계정 → 즉시 로그아웃
+    $("#lgErr").textContent = user.email+" 은(는) 관리 권한이 없어요";
+    signOut(auth);
+  } else {
+    $("#app").classList.add("hidden"); $("#login").classList.remove("hidden");
+  }
 });
 
 /* ---------- Load & render ---------- */
