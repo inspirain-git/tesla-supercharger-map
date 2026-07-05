@@ -281,6 +281,19 @@ main{padding:12px 14px 30px}
 .ft-by b{color:var(--red2)}
 .ft-copy{font-size:10.5px;color:var(--muted2);margin-top:15px;text-align:center;line-height:1.6}
 
+/* ---- 시공샵 (준비 중) ---- */
+.svc-intro{font-size:12px;color:var(--muted2);text-align:center;padding:14px 20px 4px;line-height:1.6}
+.svc-grid{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.svc-card{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:14px 15px}
+.svc-ico{width:46px;height:46px;border-radius:12px;background:var(--card2);display:flex;align-items:center;
+  justify-content:center;font-size:24px;flex-shrink:0}
+.svc-b{flex:1;min-width:0}
+.svc-name{font-size:15px;font-weight:800}
+.svc-desc{font-size:12px;color:var(--muted);margin-top:3px}
+.svc-soon{flex-shrink:0;font-size:11px;font-weight:800;color:var(--gold);background:rgba(255,193,7,.12);
+  border:1px solid rgba(255,193,7,.35);padding:5px 11px;border-radius:20px;white-space:nowrap}
+
 /* ---- Shop open button ---- */
 .shop-open{display:flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--line);
   border-radius:11px;padding:7px 11px;font-size:12.5px;font-weight:700;color:var(--txt);flex-shrink:0}
@@ -385,6 +398,7 @@ main{padding:12px 14px 30px}
     <svg class="logo" viewBox="16 6 68 93" xmlns="http://www.w3.org/2000/svg" aria-label="슈차각"><path d="M50 95 C36 76 20 60 20 40 a30 30 0 1 1 60 0 C80 60 64 76 50 95 Z" fill="#E82127"/><path d="M56 20 L34 52 H47 L44 78 L68 44 H53 L58 20 Z" fill="#fff"/></svg>
     <div class="brandtitle"><h1>슈차각</h1><span class="tagline">테슬라 휴식이 필요할 때</span></div>
     <button class="shop-open" id="shopBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L4 6v14a2 2 0 002 2h12a2 2 0 002-2V6l-2-4z"/><path d="M4 6h16M9 10a3 3 0 006 0"/></svg>용품샵</button>
+    <button class="shop-open" id="serviceBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 00-5.4 5.4l-6 6a1.5 1.5 0 002.1 2.1l6-6a4 4 0 005.4-5.4l-2.6 2.6-2.1-2.1z"/></svg>시공샵</button>
   </div>
   <div class="searchrow">
     <div class="searchbox">
@@ -443,6 +457,7 @@ main{padding:12px 14px 30px}
 <div class="overlay" id="navOverlay"></div>
 <div class="navsheet" id="navSheet"></div>
 <div class="shop" id="shop"></div>
+<div class="shop" id="service"></div>
 <div class="toast" id="toast"></div>
 </div><!-- /#app -->
 
@@ -649,6 +664,7 @@ $("#navOverlay").onclick=closeNav;
 document.addEventListener('keydown',e=>{
   if(e.key!=='Escape') return;
   if($("#shop").classList.contains('show')) closeShop();
+  else if($("#service").classList.contains('show')) closeService();
   else if($("#navSheet").classList.contains('show')) closeNav();
   else if($("#sheet").classList.contains('show')) closeSheet();
 });
@@ -859,20 +875,45 @@ function platClass(pl){ return {'쿠팡':'coupang','알리익스프레스':'ali'
 function prodThumb(p){ return p.img?`background-image:url('${p.img}')`:`background:linear-gradient(135deg,${p.color},${p.color}bb)`; }
 function openShop(){ shopCat='전체'; renderShop(); $("#shop").classList.add("show"); }
 function closeShop(){ $("#shop").classList.remove("show"); }
+const SERVICES=[
+  {n:'신차검수',i:'🔍',d:'인도 전 신차 상태·도장·단차 점검'},
+  {n:'틴팅',i:'🪟',d:'윈도우·전면 썬팅 시공'},
+  {n:'PPF',i:'🛡️',d:'페인트 보호 필름 (전체·부분)'},
+  {n:'전장류',i:'🔌',d:'블랙박스·보조배터리·전장 설치'},
+  {n:'타이어',i:'🛞',d:'타이어 교체·휠 얼라인먼트'},
+  {n:'드레스업',i:'✨',d:'스포일러·엠블럼·외장 튜닝'},
+];
+function openService(){
+  const grid=SERVICES.map(s=>`<div class="svc-card" onclick="toast('${s.n} 시공샵은 준비 중이에요 · 곧 제휴 업체를 만나보실 수 있어요')">
+      <div class="svc-ico">${s.i}</div>
+      <div class="svc-b"><div class="svc-name">${s.n}</div><div class="svc-desc">${s.d}</div></div>
+      <span class="svc-soon">준비 중</span>
+    </div>`).join('');
+  $("#service").innerHTML=`
+    <div class="shop-hd">
+      <div class="shop-title">🔧 시공샵</div>
+      <button class="shop-close" onclick="closeService()">×</button>
+    </div>
+    <div class="svc-intro">믿고 맡길 수 있는 테슬라 시공 서비스를 준비하고 있어요.<br>제휴 업체가 확정되면 예약·견적을 이곳에서 바로 하실 수 있습니다.</div>
+    <div class="svc-grid">${grid}</div>
+    <div style="height:40px"></div>`;
+  $("#service").classList.add("show"); $("#service").scrollTop=0;
+}
+function closeService(){ $("#service").classList.remove("show"); }
 function setShopCat(c){ shopCat=c; renderShop(); $("#shop").scrollTop=0; }
 function renderShop(){
   const chips=shopCats().map(c=>`<button class="scat ${c===shopCat?'active':''}" onclick="setShopCat('${c}')">${c}</button>`).join('');
   const items=PRODUCTS.filter(p=>shopCat==='전체'||p.cat===shopCat);
   const grid=items.map(p=>`<div class="prod-card" onclick="openProduct('${p.id}')">
       <div class="prod-thumb" style="${prodThumb(p)}">${p.img?'':`<span class="prod-emoji">${p.emoji}</span>`}<span class="plat ${platClass(p.platform)}">${p.platform}</span></div>
-      <div class="prod-b"><div class="prod-name">${p.name}</div><div class="prod-price">${p.price||'<span class="askprice">최저가 확인 ›</span>'}</div></div>
+      <div class="prod-b"><div class="prod-name">${p.name}</div>${p.price?`<div class="prod-price">${p.price}</div>`:''}</div>
     </div>`).join('');
   $("#shop").innerHTML=`
     <div class="shop-hd">
       <div class="shop-title">🛍️ 테슬라 용품샵</div>
       <button class="shop-close" onclick="closeShop()">×</button>
     </div>
-    <div class="shop-note">상품을 누르면 상세 설명 후 알리익스프레스로 이동합니다 · 가격은 판매처에서 확인</div>
+    <div class="shop-note">상품을 누르면 상세 설명 후 알리익스프레스로 이동합니다</div>
     <div class="shop-cats">${chips}</div>
     <div class="shop-grid">${grid}</div>
     <div style="height:40px"></div>`;
@@ -901,7 +942,7 @@ function openProduct(id){
       <div class="pd-plat"><span class="plat ${platClass(p.platform)}">${p.platform}</span><span class="pd-cat">${p.cat}</span></div>
       <div class="pd-name">${p.name}</div>
       ${p.brand?`<div class="pd-brand">${p.brand}</div>`:''}
-      ${p.price?`<div class="pd-price">${p.price}</div>`:`<div class="pd-askprice">가격은 알리익스프레스에서 확인 ›</div>`}
+      ${p.price?`<div class="pd-price">${p.price}</div>`:''}
       <div class="pd-desc">${p.desc}</div>
       ${feats?`<div class="pd-sec">주요 특징</div><ul class="pd-feats">${feats}</ul>`:''}
     </div>
@@ -997,6 +1038,7 @@ function bind(){
   $("#search").oninput=e=>{S.q=e.target.value.trim(); render();};
   $("#geoBtn").onclick=()=>locate(false);
   $("#shopBtn").onclick=openShop;
+  $("#serviceBtn").onclick=openService;
   document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
     t.classList.add("active"); S.view=t.dataset.view; render();
