@@ -187,6 +187,15 @@ main{padding:12px 14px 30px}
 .freelist li::before{content:"✓";position:absolute;left:1px;color:var(--green);font-weight:800}
 .freehead{font-size:11.5px;font-weight:800;color:var(--green);margin-top:11px}
 .freebig{font-size:14px;font-weight:800;color:var(--green);margin-top:2px}
+.freeitem{font-size:13px;line-height:1.6;padding-left:18px;position:relative;color:var(--txt);margin-top:4px}
+.freeitem::before{content:"✓";position:absolute;left:1px;color:var(--green);font-weight:800}
+.tierhd{font-size:11.5px;font-weight:700;color:var(--muted);margin-top:8px}
+.tiers{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tier{font-size:11.5px;font-weight:700;background:rgba(55,200,107,.12);color:#5fd98a;
+  border:1px solid rgba(55,200,107,.25);border-radius:8px;padding:4px 9px;white-space:nowrap}
+.loclist{margin:6px 0 0;padding:0;list-style:none}
+.loclist li{font-size:13px;line-height:1.65;padding-left:24px;position:relative;color:var(--txt);margin-top:3px}
+.loclist .lbi{position:absolute;left:0;font-size:13px}
 .spon-top.nochev{cursor:default}
 .shopchips{display:flex;flex-wrap:wrap;gap:7px;padding:0 14px 14px}
 .shopchip{font-size:12px;font-weight:700;background:var(--card2);border:1px solid var(--line);
@@ -586,7 +595,7 @@ function openSheet(c){
       </div>
       <div class="section"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>충전 정보</h3>
         <div class="infogrid">
-          <div class="infoitem"><div class="il">📍 위치</div><div class="iv">${c.location||'-'}</div></div>
+          <div class="infoitem"><div class="il">📍 위치</div>${locationBullets(c.location)}</div>
           <div class="infoitem"><div class="il">💰 주차 비용</div>${parkingCost(c)}</div>
         </div>
       </div>
@@ -676,17 +685,67 @@ function facilityCard(c){
   return { name:fac, cat, emoji, color, loc:c.location||"-", facility:c.facility, sponsored:false };
 }
 const SPON_SVG=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v4H4zM6 8v12h12V8M9 12h6"/></svg>`;
+function locationBullets(loc){
+  let s=(loc||"").replace(/\n/g,' ').replace(/\s+/g,' ').trim();
+  if(!s) return `<div class="iv">-</div>`;
+  const details=[];
+  s=s.replace(/\(([^)]*)\)/g,(m,g)=>{const t=g.trim(); if(t)details.push(t); return ' ';});
+  const segs=s.split(',').map(x=>x.trim()).filter(Boolean);
+  const floorRe=/(지하\s?\d+\s?층|지상\s?\d+\s?층|[BM]\s?\d+\s?층|\d+\s?층|옥상|반지하|지상|야외\s?주차장)/;
+  const zoneRe=/([A-Z]{1,3}-?\d{1,4}\s?번?\s?구?역?|\d{1,3}\s?번?\s?구역|GATE\s?\d+|[A-Z]동|[A-Z]구역)/;
+  let floor=null,zone=null; const notes=[];
+  segs.forEach(seg=>{
+    const fm=seg.match(floorRe);
+    if(fm && !floor){
+      floor=fm[0]; let rest=seg.slice(0,fm.index)+seg.slice(fm.index+fm[0].length);
+      const z=rest.match(zoneRe);
+      if(z && !zone){ zone=z[0]; rest=rest.slice(0,z.index)+rest.slice(z.index+z[0].length); }
+      rest=rest.replace(/^[\s\-·]+|[\s\-·]+$/g,'');
+      if(rest) notes.push(rest);
+    } else {
+      const z=seg.match(zoneRe);
+      if(z && !zone){ zone=z[0]; const rest=(seg.slice(0,z.index)+seg.slice(z.index+z[0].length)).replace(/^[\s\-·]+|[\s\-·]+$/g,''); if(rest) notes.push(rest); }
+      else if(seg) notes.push(seg);
+    }
+  });
+  if(!zone){ for(let k=0;k<details.length;k++){ const z=details[k].match(zoneRe);
+    if(z){ zone=z[0]; details[k]=(details[k].slice(0,z.index)+details[k].slice(z.index+z[0].length)).replace(/^[\s\-·]+|[\s\-·]+$/g,''); break; } } }
+  const items=[];
+  if(floor) items.push(['🏢', floor.replace(/\s+/g,'')]);
+  if(zone) items.push(['🅿️', zone.replace(/\s+/g,'')]);
+  details.concat(notes).forEach(n=>{ n=n.replace(/^[\s\-·]+|[\s\-·]+$/g,''); if(n) items.push(['📌', n]); });
+  if(!items.length) return `<div class="iv">${s}</div>`;
+  return `<ul class="loclist">${items.map(([i,t])=>`<li><span class="lbi">${i}</span>${t}</li>`).join('')}</ul>`;
+}
+function expandTiers(cl){
+  const m=cl.match(/([\d,]+)\s*만원\s*구매\s*시?\s*([\d,]+)\s*시간/);
+  if(!m) return null;
+  const a=m[1].split(',').map(x=>x.trim()).filter(Boolean);
+  const hh=m[2].split(',').map(x=>x.trim()).filter(Boolean);
+  if(a.length<2 || a.length!==hh.length) return null;
+  return a.map((x,i)=>`${x}만원 → ${hh[i]}시간`);
+}
 function parkingCost(c){
-  const raw=(c.parking||"").trim();
+  let raw=(c.parking||"").trim();
   if(!raw) return `<div class="iv">-</div>`;
+  raw=raw.replace(/그매시/g,'구매시').replace(/[<>]/g,'').replace(/[ \t]+/g,' ').trim();
   const fmt=s=>s.replace(/(\d{4,})\s*원/g,(m,n)=>Number(n).toLocaleString()+'원');
-  const clauses=raw.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  const PH='';
+  const prot=raw.replace(/\d+(?:\s*,\s*\d+)+/g, m=>m.replace(/\s*,\s*/g,PH));
+  const clauses=prot.split(/[\n,]+/).map(s=>s.replace(new RegExp(PH,'g'),',').trim()).filter(Boolean);
   const pay=[], free=[];
-  clauses.forEach(cl=>{ (/무료|할인/.test(cl)?free:pay).push(fmt(cl)); });
-  if(!pay.length && free.length===1) return `<div class="freebig">🆓 ${free[0]}</div>`;
+  clauses.forEach(cl=>{ (/무료|할인/.test(cl)?free:pay).push(cl); });
+  if(!pay.length && free.length===1 && !/구매|만원/.test(free[0])) return `<div class="freebig">🆓 ${fmt(free[0])}</div>`;
   let h='';
-  if(pay.length) h+=`<ul class="paylist">${pay.map(p=>`<li>${p}</li>`).join('')}</ul>`;
-  if(free.length) h+=`<div class="freehead">🆓 무료·할인 옵션</div><ul class="freelist">${free.map(f=>`<li>${f}</li>`).join('')}</ul>`;
+  if(pay.length) h+=`<ul class="paylist">${pay.map(p=>`<li>${fmt(p)}</li>`).join('')}</ul>`;
+  if(free.length){
+    h+=`<div class="freehead">🆓 무료·할인 옵션</div>`;
+    free.forEach(f=>{
+      const t=expandTiers(f);
+      if(t) h+=`<div class="tierhd">구매 금액별 무료주차</div><div class="tiers">${t.map(p=>`<span class="tier">${p}</span>`).join('')}</div>`;
+      else h+=`<div class="freeitem">${fmt(f)}</div>`;
+    });
+  }
   return h||`<div class="iv">${fmt(raw)}</div>`;
 }
 function sponsorSection(c){
