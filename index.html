@@ -47,7 +47,9 @@ header{position:sticky;top:0;z-index:600;background:rgba(12,12,15,.92);
   padding:calc(env(safe-area-inset-top) + 10px) 14px 8px}
 .brand{display:flex;align-items:center;gap:9px;margin-bottom:10px}
 .brand .logo{height:22px;width:auto;display:block;filter:drop-shadow(0 1px 3px rgba(232,33,39,.35))}
-.brand h1{font-size:16px;font-weight:800;letter-spacing:.3px;margin:0;flex:1}
+.brand h1{font-size:16px;font-weight:800;letter-spacing:.3px;margin:0}
+.brandtitle{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px}
+.tagline{font-size:10.5px;font-weight:700;color:#ffb84d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .brand .count{font-size:11px;color:var(--muted);font-weight:600}
 .searchrow{display:flex;gap:8px;align-items:center}
 .searchbox{flex:1;display:flex;align-items:center;gap:8px;background:var(--card2);
@@ -353,7 +355,7 @@ main{padding:12px 14px 30px}
 <header>
   <div class="brand">
     <svg class="logo" viewBox="16 6 68 93" xmlns="http://www.w3.org/2000/svg" aria-label="슈차각"><path d="M50 95 C36 76 20 60 20 40 a30 30 0 1 1 60 0 C80 60 64 76 50 95 Z" fill="#E82127"/><path d="M56 20 L34 52 H47 L44 78 L68 44 H53 L58 20 Z" fill="#fff"/></svg>
-    <h1>슈차각</h1>
+    <div class="brandtitle"><h1>슈차각</h1><span class="tagline">테슬라 휴식이 필요할 때</span></div>
     <button class="shop-open" id="shopBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L4 6v14a2 2 0 002 2h12a2 2 0 002-2V6l-2-4z"/><path d="M4 6h16M9 10a3 3 0 006 0"/></svg>용품샵</button>
   </div>
   <div class="searchrow">
@@ -401,7 +403,7 @@ main{padding:12px 14px 30px}
     <svg class="ft-logo" viewBox="16 6 68 93" xmlns="http://www.w3.org/2000/svg" aria-label="슈차각"><path d="M50 95 C36 76 20 60 20 40 a30 30 0 1 1 60 0 C80 60 64 76 50 95 Z" fill="#E82127"/><path d="M56 20 L34 52 H47 L44 78 L68 44 H53 L58 20 Z" fill="#fff"/></svg>
     <div>
       <div class="ft-title">슈차각</div>
-      <div class="ft-by">테슬라 충전소 지도·등급 · <b>inspirain</b></div>
+      <div class="ft-by" style="color:#ffb84d;font-weight:700">테슬라 휴식이 필요할 때</div>
     </div>
   </div>
   <div class="ft-copy">© 2026 inspirain. All rights reserved.</div>
