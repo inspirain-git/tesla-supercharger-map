@@ -951,14 +951,11 @@ function openProduct(id){
     </div>`;
   $("#shop").scrollTop=0;
 }
-// 새 탭이 막히는 인앱 브라우저/팝업차단 환경에서도 열리도록 폴백 처리
 function buyClick(e){
   const url=e.currentTarget.dataset.url;
   if(!url){ e.preventDefault(); toast("레퍼럴 링크를 등록하면 판매처로 이동합니다"); return false; }
-  e.preventDefault();
-  let w=null; try{ w=window.open(url,'_blank','noopener'); }catch(_){}
-  if(!w){ location.href=url; }   // 팝업 차단 시 같은 탭에서 이동
-  return false;
+  // 라이브 링크는 앵커 기본동작(target=_blank)으로 '새 탭만' 열림 · 현재 사이트는 이동하지 않음
+  return true;
 }
 
 /* ============ Map ============ */
