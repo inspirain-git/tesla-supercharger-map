@@ -609,7 +609,8 @@ function shareToTesla(c){
   const url=`https://maps.google.com/?q=${c.lat},${c.lng}`;
   if(navigator.share){
     closeNav();
-    navigator.share({title:c.title, text:`${c.title} · 테슬라 슈퍼차저`, url}).catch(()=>{});
+    // URL만 공유 → OS가 '링크 공유'로 처리해 지도·위치 앱(테슬라 포함)이 앞에 노출됨
+    navigator.share({url}).catch(()=>{});
   } else {
     try{ navigator.clipboard.writeText(url); }catch(e){}
     toast('테슬라 앱 공유는 휴대폰에서 돼요 · 위치 링크를 복사했어요');
