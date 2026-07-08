@@ -262,6 +262,11 @@ main{padding:12px 14px 30px}
 .navopt:active{transform:scale(.96)}
 .navopt .ni{width:52px;height:52px;border-radius:14px;display:block}
 .navopt.cancel{width:100%;padding:14px;background:var(--card2);color:var(--muted);font-weight:700}
+.navopt.tesla{width:100%;flex-direction:row;justify-content:center;gap:11px;margin-bottom:10px;padding:15px;
+  background:linear-gradient(135deg,#20232c,#171920);border-color:#4a2a2f;font-size:14px}
+.navopt.tesla .tmark{width:30px;height:30px;border-radius:8px;background:var(--red);color:#fff;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px}
+.ns-hint{font-size:11px;color:var(--muted2);text-align:center;margin:-2px 0 12px;line-height:1.5}
 
 /* ---- Detail nav row ---- */
 .navlabel{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.5px;margin-bottom:10px;
@@ -599,6 +604,17 @@ function launchNav(prov,c){
   if(web){ setTimeout(()=>{ if(!document.hidden && performance.now()-start<2200){ location.href=web; } },1500); }
   else { toast(`${NAV_LABEL[prov]} 앱을 실행합니다`); }
 }
+function shareToTesla(c){
+  if(window.__track) window.__track('nav',{app:'tesla',id:c.id,title:c.title,region:c.region});
+  const url=`https://maps.google.com/?q=${c.lat},${c.lng}`;
+  if(navigator.share){
+    closeNav();
+    navigator.share({title:c.title, text:`${c.title} · 테슬라 슈퍼차저`, url}).catch(()=>{});
+  } else {
+    try{ navigator.clipboard.writeText(url); }catch(e){}
+    toast('테슬라 앱 공유는 휴대폰에서 돼요 · 위치 링크를 복사했어요');
+  }
+}
 function openNav(c){
   const ns=$("#navSheet");
   ns.innerHTML=`
@@ -609,8 +625,11 @@ function openNav(c){
       <button class="navopt" data-p="kakao"><img class="ni" src="logo/icon-kakao.png" alt=""><span>카카오맵</span></button>
       <button class="navopt" data-p="naver"><img class="ni" src="logo/icon-naver.png" alt=""><span>네이버맵</span></button>
     </div>
+    <button class="navopt tesla" id="teslaShare"><span class="tmark">T</span><span>테슬라 차량으로 보내기</span></button>
+    <div class="ns-hint">공유 시트에서 <b>테슬라 앱</b> 선택 → 차량으로 목적지 전송</div>
     <button class="navopt cancel">취소</button>`;
   ns.querySelectorAll(".navopt[data-p]").forEach(b=>b.onclick=()=>launchNav(b.dataset.p,c));
+  const tb=ns.querySelector("#teslaShare"); if(tb) tb.onclick=()=>shareToTesla(c);
   ns.querySelector(".cancel").onclick=closeNav;
   $("#navOverlay").classList.add("show"); ns.classList.add("show");
 }

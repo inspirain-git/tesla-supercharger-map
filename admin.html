@@ -362,7 +362,7 @@ function renderPerf(evs){
   const pViews=evs.filter(e=>e.t==='product_view');
   const pClicks=evs.filter(e=>e.t==='product_click');
 
-  const navApp=groupTop(navs,e=>({tmap:'티맵',kakao:'카카오맵',naver:'네이버맵'}[e.app]||e.app),5);
+  const navApp=groupTop(navs,e=>({tmap:'티맵',kakao:'카카오맵',naver:'네이버맵',tesla:'테슬라'}[e.app]||e.app),5);
   const navTop=groupTop(navs,e=>e.title,8);
   const searchTop=groupTop(searches,e=>String(e.q||'').trim().toLowerCase(),12);
   const regionTop=groupTop(geos,e=>e.region,12);
