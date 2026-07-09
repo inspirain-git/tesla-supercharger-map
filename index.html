@@ -1082,6 +1082,7 @@ bind(); render(); locate(true);
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getFirestore, collection, getDocs, query, orderBy, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app-check.js";
 const firebaseConfig = {
   apiKey: "AIzaSyBhEpDS14pcMxYO8tTAAObOQLEFTyjt3gk",
   authDomain: "suchagak.firebaseapp.com",
@@ -1091,7 +1092,9 @@ const firebaseConfig = {
   appId: "1:825619082717:web:72124990f36bc7bcff1a34"
 };
 try{
-  const db = getFirestore(initializeApp(firebaseConfig));
+  const app = initializeApp(firebaseConfig);
+  initializeAppCheck(app, { provider: new ReCaptchaV3Provider("6LcbU0stAAAAAMNcqisW5y2oMjUvy7WKfheu6eTs"), isTokenAutoRefreshEnabled: true });
+  const db = getFirestore(app);
   // ===== 방문/이벤트 수집 (관리자 퍼포먼스 대시보드용) =====
   let cid=localStorage.getItem('scg_cid');
   if(!cid){ cid=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():'c'+Date.now()+Math.random().toString(36).slice(2); localStorage.setItem('scg_cid',cid); }
