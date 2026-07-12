@@ -104,7 +104,7 @@ table.ptbl{width:100%;border-collapse:collapse;font-size:13px}
       <div id="storageBanner" class="banner hidden">ℹ️ 사진 업로드(Storage)가 아직 켜져 있지 않아요. 지금은 <b>이미지 URL 붙여넣기</b>로 넣을 수 있고, Storage를 켜면 파일 업로드가 됩니다.</div>
       <div class="toolbar">
         <button class="btn" id="addBtn">＋ 새 상품</button>
-        <button class="btn ghost" id="seedBtn">현재 상품 31개 가져오기</button>
+        <button class="btn ghost" id="seedBtn">↻ 사이트 상품 동기화</button>
         <span class="count" id="count"></span>
       </div>
       <div id="list"></div>
@@ -150,6 +150,8 @@ const CAT_META = {
  "충전·전력":["⚡","#ff6a00"], "외관·휠":["⚙️","#607d8b"], "기타":["🛍️","#888888"],
 };
 const CATS = Object.keys(CAT_META);
+const MODELS = ["공용","S","X","3","Y","Y주니퍼"];
+const MODEL_LABEL = {"공용":"공용","S":"모델 S","X":"모델 X","3":"모델 3","Y":"모델 Y","Y주니퍼":"모델 Y 주니퍼"};
 const $ = s=>document.querySelector(s);
 let toastT;
 function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
@@ -187,24 +189,25 @@ async function loadProducts(){
 }
 function render(){
   $("#count").textContent = items.length+"개 상품";
-  $("#seedBtn").classList.toggle("hidden", items.length>0);
-  $("#list").innerHTML = items.map((it,i)=>cardHTML(it,i)).join('') || '<div class="hint">등록된 상품이 없어요. “현재 상품 31개 가져오기”로 시작하세요.</div>';
+  $("#list").innerHTML = items.map((it,i)=>cardHTML(it,i)).join('') || '<div class="hint">등록된 상품이 없어요. “↻ 사이트 상품 동기화”로 시작하세요.</div>';
   items.forEach((it,i)=>wireCard(i));
 }
 function cardHTML(it,i){
   const p=it.data;
   const bg = p.img?`background-image:url('${esc(p.img)}')`:'';
   const catOpts = CATS.map(c=>`<option ${c===p.cat?'selected':''}>${c}</option>`).join('');
+  const modelOpts = MODELS.map(m=>`<option value="${m}" ${m===(p.model||'공용')?'selected':''}>${MODEL_LABEL[m]}</option>`).join('');
   return `<div class="card" id="card${i}">
     <div class="cardhd">
       <div class="thumb" id="thumb${i}" style="${bg}">${p.img?'':(p.emoji||'🛍️')}</div>
       <div class="nm" id="nm${i}">${esc(p.name)||'(이름 없음)'}</div>
-      <span class="pill">#${p.ord??i}</span>
+      <span class="pill">${MODEL_LABEL[p.model||'공용']}</span>
     </div>
     <div class="grid2">
-      <div><label>카테고리</label><select data-f="cat">${catOpts}</select></div>
-      <div><label>순서(작을수록 위)</label><input data-f="ord" type="number" value="${p.ord??i}"></div>
+      <div><label>모델 (1차 분류)</label><select data-f="model">${modelOpts}</select></div>
+      <div><label>카테고리 (2차 분류)</label><select data-f="cat">${catOpts}</select></div>
     </div>
+    <label>순서(작을수록 위)</label><input data-f="ord" type="number" value="${p.ord??i}">
     <label>상품명</label><input data-f="name" value="${esc(p.name)}">
     <label>짧은 설명</label><input data-f="desc" value="${esc(p.desc)}">
     <div class="grid2">
@@ -285,28 +288,28 @@ $("#addBtn").onclick=()=>{
   const c=$("#card"+(items.length-1)); c.scrollIntoView({behavior:"smooth"}); c.classList.add("dirty");
 };
 $("#seedBtn").onclick=async ()=>{
-  if(items.length>0){ toast("이미 상품이 있어요"); return; }
-  if(!confirm("현재 사이트의 상품 31개를 DB로 가져올까요?")) return;
-  toast("가져오는 중…");
+  if(!confirm("사이트 내장 상품으로 DB를 동기화할까요?\n· 새 상품 추가 + 기존 상품 업데이트(모델 분류 포함)\n· 직접 입력한 가격/쿠폰은 그대로 유지됩니다")) return;
+  toast("동기화 중…");
   try{
+    const existing={}; items.forEach(it=>existing[it.id]=it.data||{});
     const html=await (await fetch("/index.html?"+Date.now())).text();
-    const key="PRODUCTS=";
-    const s=html.indexOf(key); if(s<0) throw new Error("상품 데이터를 찾지 못했어요");
+    const s=html.indexOf("PRODUCTS="); if(s<0) throw new Error("상품 데이터를 찾지 못했어요");
     let j=html.indexOf("[",s), depth=0, e=-1, inStr=false, esc2=false;
     for(let k=j;k<html.length;k++){ const ch=html[k];
       if(inStr){ if(esc2)esc2=false; else if(ch==="\\")esc2=true; else if(ch==='"')inStr=false; }
       else{ if(ch==='"')inStr=true; else if(ch==="[")depth++; else if(ch==="]"){ depth--; if(depth===0){e=k;break;} } } }
     const arr=JSON.parse(html.slice(j,e+1));
     let n=0;
-    for(let k=0;k<arr.length;k++){ const p=arr[k];
+    for(let k=0;k<arr.length;k++){ const p=arr[k]; const ex=existing[p.id]||{};
       const [emoji,color]=CAT_META[p.cat]||CAT_META["기타"];
-      await setDoc(doc(db,"products",p.id),{ id:p.id, cat:p.cat, name:p.name, brand:p.brand||"", price:p.price||"",
-        platform:p.platform||"알리익스프레스", emoji:p.emoji||emoji, color:p.color||color, img:p.img||"",
-        desc:p.desc||"", detail:Array.isArray(p.detail)?p.detail:[], url:p.url||"#", coupon:p.coupon||"", couponDesc:p.couponDesc||"", ord:k });
+      await setDoc(doc(db,"products",p.id),{ id:p.id, cat:p.cat, name:p.name, model:p.model||"공용", brand:p.brand||"",
+        price:(ex.price||p.price||""), platform:p.platform||"알리익스프레스", emoji:p.emoji||emoji, color:p.color||color, img:p.img||"",
+        desc:p.desc||"", detail:Array.isArray(p.detail)?p.detail:[], url:p.url||"#",
+        coupon:(ex.coupon||p.coupon||""), couponDesc:(ex.couponDesc||p.couponDesc||""), ord:k });
       n++;
     }
-    toast(n+"개 가져오기 완료!"); loadProducts();
-  }catch(e){ toast("가져오기 실패: "+(e.code||e.message)); }
+    toast(n+"개 동기화 완료!"); loadProducts();
+  }catch(e){ toast("동기화 실패: "+(e.code||e.message)); }
 };
 
 /* ---------- 탭 전환 ---------- */
